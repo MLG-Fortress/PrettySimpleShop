@@ -1,0 +1,19 @@
+name: PrettySimpleShop
+version: ${project.version}
+#website:
+author: RoboMWM
+main: com.robomwm.prettysimpleshop.PrettySimpleShop
+softdepend:
+- Multiverse-Core
+- Essentials
+loadbefore:
+- WorldGuard
+- GriefPrevention
+commands:
+  price:
+    usage: /price <price> - Changes the price per item of the selected shop (select a shop via left-clicking its chest).
+  buy:
+    usage: /buy <quantity> - Attempts to buy <quantity> amount from the selected shop (select a shop via left-clicking its chest).
+  shop:
+    usage: /price, /buy
+    aliases: [simpleshop, prettysimpleshop, pshop, psshop, sshop]
