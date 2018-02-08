@@ -70,7 +70,7 @@ public class ConfigManager
 
     public String getString(String key)
     {
-        return formatter(messages.get("key"));
+        return formatter(messages.get(key));
     }
 
     public Set<World> getWhitelistedWorlds() //may want to consider returning unmodifiable collection
