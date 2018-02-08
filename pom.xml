@@ -24,6 +24,10 @@
             <id>wesjd-repo</id>
             <url>https://nexus.wesjd.net/repository/thirdparty/</url>
         </repository>
+        <repository> <!--Required for anvilGUI apparently-->
+            <id>spigot-repo</id>
+            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+        </repository>
     </repositories>
     <build>
         <finalName>${project.name}</finalName>
