@@ -173,7 +173,7 @@ public class ShopAPI
             if (itemStack.getAmount() <= amount)
             {
                 amount -= itemStack.getAmount();
-                inventoryIterator.remove();
+                itemStack.setType(Material.AIR);
             }
             else
             {
