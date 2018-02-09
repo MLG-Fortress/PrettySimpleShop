@@ -108,6 +108,7 @@ public class ShopAPI
         if (theName == null || theName.isEmpty())
             return -1;
         String[] name = theName.split(" ");
+        PrettySimpleShop.debug(String.join(" ", name));
         if (name.length < 5 || name[4].length() < 3 || !name[4].substring(0, 1).equals("\u00A7\u00A7"))
             return 0;
         revenue = Double.parseDouble(name[4].substring(2));
@@ -203,6 +204,7 @@ public class ShopAPI
         String[] name = getName(chest).split(" ");
         name[3] = Long.toString(Long.valueOf(name[3]) + item.getAmount());
         double revenue = getRevenue(chest, false);
+        PrettySimpleShop.debug("rev" + revenue);
         revenue += item.getAmount() * price;
         name[4] = "\u00A7\u00A7" + Double.toString(revenue);
         if (!setName(chest, StringUtils.join(name, " ")))
