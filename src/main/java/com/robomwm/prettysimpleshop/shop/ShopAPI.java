@@ -110,7 +110,7 @@ public class ShopAPI
         if (!isShop(chest))
             return null;
         Inventory inventory;
-        inventory = chest.getBlockInventory();
+        inventory = chest.getInventory();
         //Might not need to do this check; could just get the holder's inventory regardless if double or not...?
         if (inventory.getHolder() instanceof DoubleChest)
             inventory = inventory.getHolder().getInventory();
