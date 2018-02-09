@@ -20,12 +20,10 @@ public class PrettySimpleShop extends JavaPlugin
 {
     private Economy economy;
     private ShopListener shopListener;
-    private static Logger logger;
     private static boolean debug;
 
     public void onEnable()
     {
-        logger = getLogger();
         economy = getEconomy();
         if (economy == null)
         {
@@ -42,10 +40,10 @@ public class PrettySimpleShop extends JavaPlugin
         getCommand("buy").setExecutor(new BuyCommand(shopListener));
     }
 
-    public static void debug(String message)
+    public static void debug(Object message)
     {
         if (debug)
-            logger.info(message);
+            System.out.println("[PrettySimpleShop debug] " + message);
     }
 
     private Economy getEconomy()
