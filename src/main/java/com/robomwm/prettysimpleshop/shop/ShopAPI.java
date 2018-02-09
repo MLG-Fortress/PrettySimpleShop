@@ -147,6 +147,7 @@ public class ShopAPI
     {
         Validate.notNull(chest);
         //Verify price
+        PrettySimpleShop.debug(Double.toString(getPrice(chest)) + " " + price);
         if (getPrice(chest) != price)
             return null;
         PrettySimpleShop.debug("price validated");
