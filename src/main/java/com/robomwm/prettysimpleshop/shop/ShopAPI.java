@@ -162,32 +162,12 @@ public class ShopAPI
             item.setAmount(shopItem.getAmount());
 
         Inventory inventory = getInventory(chest);
-        Iterator inventoryIterator = inventory.iterator();
-        int amount = item.getAmount();
 
-        while (amount > 0)
-        {
-            ItemStack itemStack = (ItemStack)inventoryIterator.next();
-            if (itemStack == null || itemStack.getType() == Material.AIR)
-                continue;
-            if (itemStack.getAmount() <= amount)
-            {
-                amount -= itemStack.getAmount();
-                itemStack.setType(Material.AIR);
-            }
-            else
-            {
-                amount -= amount; //Basically amount = 0
-                itemStack.setAmount(itemStack.getAmount() - amount);
-            }
-        }
-
-        //TODO: Is retrieved inventory a copy? Else must setContents
+        inventory.removeItem(item);
 
         //Update statistics (currently just total sales)
         String[] name = chest.getCustomName().split(" ");
-        long sales = Long.valueOf(name[3]); //TODO: update total revenue, if feasible
-        sales += item.getAmount();
+        name[3] = Long.toString(Long.valueOf(name[3] + item.getAmount())); //TODO: update total revenue, if feasible
         chest.setCustomName(StringUtils.join(name, " "));
 
         if (!chest.update())
