@@ -10,6 +10,7 @@ import org.bukkit.block.BlockState;
 import org.bukkit.block.Chest;
 import org.bukkit.block.DoubleChest;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
 import java.text.NumberFormat;
@@ -20,6 +21,8 @@ import java.util.Iterator;
  * Provides convenience methods to access and operate upon a shop, given a location
  *
  * We do not store Shop objects since we store everything inside the Chests' inventoryName
+ *
+ * You have no idea how much time I wasted trying to figure out stupid DoubleChests just to find out they store a stupid copy of a Chest that you can't update so yea thanks Bukkit/spigot
  *
  * @author RoboMWM
  */
@@ -59,7 +62,8 @@ public class ShopAPI
 
     public boolean isShop(Chest chest)
     {
-        if (chest == null || chest.getCustomName() == null || chest.getCustomName().isEmpty())
+        String theName = getName(chest);
+        if (theName.isEmpty())
             return false;
         String[] name = chest.getCustomName().split(" ");
         if (name.length == 1 && name[0].equals(shopKey))
@@ -71,29 +75,26 @@ public class ShopAPI
 
     public boolean setPrice(Chest chest, double newPrice)
     {
-        if (chest == null || chest.getCustomName() == null || chest.getCustomName().isEmpty())
+        String theName = getName(chest);
+        if (theName.isEmpty())
             return false;
         String[] name = chest.getCustomName().split(" ");
         if (name.length == 1 && name[0].equals(shopKey))
-        {
-            chest.setCustomName(priceKey + " " + Double.toString(newPrice) + " " + salesKey + " 0"); //TODO: include total revenue, if feasible
-            return chest.update();
-        }
+            return setName(chest, priceKey + " " + Double.toString(newPrice) + " " + salesKey + " 0 0");
         else if (!name[0].equals(priceKey))
             return false;
 
         name[1] = Double.toString(newPrice);
 
-        chest.setCustomName(StringUtils.join(name, " "));
-
-        return chest.update();
+        return setName(chest, StringUtils.join(name, " "));
     }
 
     public double getPrice(Chest chest)
     {
-        if (chest == null || chest.getCustomName() == null || chest.getCustomName().isEmpty())
+        String theName = getName(chest);
+        if (theName == null || theName.isEmpty())
             return -1;
-        String[] name = chest.getCustomName().split(" ");
+        String[] name = theName.split(" ");
         if (name.length < 2 || !name[0].equals(priceKey))
             return -1;
         else
@@ -101,20 +102,13 @@ public class ShopAPI
     }
 
     /**
-     * If chest is part of a DoubleChest, it's only gonna return half of it - so get the inventoryholder's inventory.
+     * Apparently DoubleChests will return its inventory when doing this even though it's a chest idk it's stupid
      * @param chest
-     * @return null if not a shop
+     * @return
      */
     private Inventory getInventory(Chest chest)
     {
-        if (!isShop(chest))
-            return null;
-        Inventory inventory;
-        inventory = chest.getSnapshotInventory();
-        //Might not need to do this check; could just get the holder's inventory regardless if double or not...?
-        if (inventory.getHolder() instanceof DoubleChest)
-            inventory = inventory.getHolder().getInventory();
-        return inventory;
+        return chest.getInventory();
     }
 
     /**
@@ -137,6 +131,32 @@ public class ShopAPI
         return (Chest)location.getBlock().getState();
     }
 
+    private String getName(Chest chest)
+    {
+        if (!(chest.getInventory().getHolder() instanceof DoubleChest))
+        {
+            return chest.getCustomName();
+        }
+        DoubleChest doubleChest = (DoubleChest)chest;
+        return ((Chest)doubleChest.getLeftSide()).getCustomName(); //Left side takes precedence
+    }
+
+    private boolean setName(Chest chest, String name)
+    {
+        if (!(chest.getInventory().getHolder() instanceof DoubleChest))
+        {
+            chest.setCustomName(name);
+            return chest.update();
+        }
+        //Thanks Bukkit
+        DoubleChest doubleChest = (DoubleChest)chest.getInventory().getHolder();
+        Chest leftChest = (Chest)((Chest)doubleChest.getLeftSide()).getBlock().getState();
+        leftChest.setCustomName(name);
+        Chest rightChest = (Chest)((Chest)doubleChest.getRightSide()).getBlock().getState();
+        rightChest.setCustomName(name);
+        return leftChest.update() && rightChest.update();
+    }
+
     /**
      * Removes items from the shop - performs the transaction
      * @param item
@@ -145,7 +165,6 @@ public class ShopAPI
      */
     public ItemStack performTransaction(Chest chest, ItemStack item, double price)
     {
-        Validate.notNull(chest);
         //Verify price
         PrettySimpleShop.debug(Double.toString(getPrice(chest)) + " " + price);
         if (getPrice(chest) != price)
@@ -161,14 +180,14 @@ public class ShopAPI
         if (item.getAmount() > shopItem.getAmount())
             item.setAmount(shopItem.getAmount());
 
+        //Update statistics first, otherwise will overwrite inventory changes
+        String[] name = getName(chest).split(" ");
+        name[3] = Long.toString(Long.valueOf(name[3]) + item.getAmount()); //TODO: store money
+        if (!setName(chest, StringUtils.join(name, " ")))
+            return null;
+
         Inventory inventory = getInventory(chest);
-
         inventory.removeItem(item);
-
-        //Update statistics (currently just total sales)
-        String[] name = chest.getCustomName().split(" ");
-        name[3] = Long.toString(Long.valueOf(name[3]) + item.getAmount()); //TODO: update total revenue, if feasible
-        chest.setCustomName(StringUtils.join(name, " "));
 
         if (!chest.update())
             return null;
