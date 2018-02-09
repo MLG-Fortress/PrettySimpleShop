@@ -71,7 +71,7 @@ public class ShopListener implements Listener
             return;
 
         Chest chest = (Chest)block.getState();
-        if (shopAPI.isShop(chest))
+        if (!shopAPI.isShop(chest))
             return;
         ItemStack item = shopAPI.getItemStack(chest);
         double price = shopAPI.getPrice(chest);

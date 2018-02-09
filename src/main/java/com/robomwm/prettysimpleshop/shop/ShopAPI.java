@@ -66,7 +66,6 @@ public class ShopAPI
         if (theName.isEmpty())
             return false;
         String[] name = theName.split(" ");
-        PrettySimpleShop.debug(name.length);
         if (name.length == 1 && name[0].equals(shopKey)) //new shop
             return true;
         return name.length == 5 && getRevenue(chest, false) >= 0;
