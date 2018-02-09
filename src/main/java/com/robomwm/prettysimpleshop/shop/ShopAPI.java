@@ -189,9 +189,6 @@ public class ShopAPI
         Inventory inventory = getInventory(chest);
         inventory.removeItem(item);
 
-        if (!chest.update())
-            return null;
-
         return item;
     }
 }
