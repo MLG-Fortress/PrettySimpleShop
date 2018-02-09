@@ -110,7 +110,7 @@ public class ShopAPI
         if (!isShop(chest))
             return null;
         Inventory inventory;
-        inventory = chest.getInventory();
+        inventory = chest.getSnapshotInventory();
         //Might not need to do this check; could just get the holder's inventory regardless if double or not...?
         if (inventory.getHolder() instanceof DoubleChest)
             inventory = inventory.getHolder().getInventory();
@@ -167,7 +167,7 @@ public class ShopAPI
 
         //Update statistics (currently just total sales)
         String[] name = chest.getCustomName().split(" ");
-        name[3] = Long.toString(Long.valueOf(name[3] + item.getAmount())); //TODO: update total revenue, if feasible
+        name[3] = Long.toString(Long.valueOf(name[3]) + item.getAmount()); //TODO: update total revenue, if feasible
         chest.setCustomName(StringUtils.join(name, " "));
 
         if (!chest.update())
