@@ -153,7 +153,7 @@ public class ShopAPI
         PrettySimpleShop.debug("price validated");
         //Verify item type
         ItemStack shopItem = getItemStack(chest);
-        PrettySimpleShop.debug(item.toString());
+        PrettySimpleShop.debug(shopItem.toString() + item.toString());
         if (isSimilar(item, shopItem))
             return null;
         PrettySimpleShop.debug("item validated");
