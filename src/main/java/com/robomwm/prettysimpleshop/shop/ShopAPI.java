@@ -4,6 +4,7 @@ import net.milkbowl.vault.economy.Economy;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Chest;
 import org.bukkit.block.DoubleChest;
@@ -43,7 +44,7 @@ public class ShopAPI
         ItemStack item = null;
         for (ItemStack itemStack : inventory)
         {
-            if (itemStack == null)
+            if (itemStack == null || itemStack.getType() == Material.AIR)
                 continue;
             if (item == null) //Set item
                 item = itemStack.clone();
@@ -95,7 +96,7 @@ public class ShopAPI
         if (name.length < 2 || !name[0].equals(priceKey))
             return -1;
         else
-            return Double.parseDouble(name[2]);
+            return Double.parseDouble(name[1]);
     }
 
     /**
