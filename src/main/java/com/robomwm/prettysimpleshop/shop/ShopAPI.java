@@ -1,5 +1,6 @@
 package com.robomwm.prettysimpleshop.shop;
 
+import com.robomwm.prettysimpleshop.PrettySimpleShop;
 import net.milkbowl.vault.economy.Economy;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
@@ -148,10 +149,13 @@ public class ShopAPI
         //Verify price
         if (getPrice(chest) != price)
             return null;
+        PrettySimpleShop.debug("price validated");
         //Verify item type
         ItemStack shopItem = getItemStack(chest);
+        PrettySimpleShop.debug(item.toString());
         if (isSimilar(item, shopItem))
             return null;
+        PrettySimpleShop.debug("item validated");
         //Verify stock - cap to max stock remaining
         if (item.getAmount() > shopItem.getAmount())
             item.setAmount(shopItem.getAmount());
@@ -163,7 +167,7 @@ public class ShopAPI
         while (amount > 0)
         {
             ItemStack itemStack = (ItemStack)inventoryIterator.next();
-            if (itemStack == null)
+            if (itemStack == null || itemStack.getType() == Material.AIR)
                 continue;
             if (itemStack.getAmount() <= amount)
             {

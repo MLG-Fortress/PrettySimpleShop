@@ -85,7 +85,7 @@ public class ShopListener implements Listener
 
         //TODO: Use fancy json, potentially fire event for custom plugins (e.g. anvil GUI, if we can manage to stick itemstack in it)
 
-        player.sendMessage(item.getType().name() + " @ " + economy.format(price) + " each. " + item.getAmount() + "available.");
+        player.sendMessage(item.getI18NDisplayName() + " @ " + economy.format(price) + " each. " + item.getAmount() + " available.");
         player.sendMessage("/buy <quantity>");
     }
 

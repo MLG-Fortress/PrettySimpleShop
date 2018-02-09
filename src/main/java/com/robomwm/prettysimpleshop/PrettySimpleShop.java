@@ -9,6 +9,8 @@ import net.milkbowl.vault.economy.Economy;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.logging.Logger;
+
 /**
  * Created on 2/4/2018.
  *
@@ -16,11 +18,14 @@ import org.bukkit.plugin.java.JavaPlugin;
  */
 public class PrettySimpleShop extends JavaPlugin
 {
-    Economy economy;
-    ShopListener shopListener;
+    private Economy economy;
+    private ShopListener shopListener;
+    private static Logger logger;
+    private static boolean debug;
 
     public void onEnable()
     {
+        logger = getLogger();
         economy = getEconomy();
         if (economy == null)
         {
@@ -29,11 +34,18 @@ public class PrettySimpleShop extends JavaPlugin
             return;
         }
         ConfigManager config = new ConfigManager(this);
+        debug = config.isDebug();
         ShopAPI shopAPI = new ShopAPI(config.getString("shopName"), config.getString("price"), config.getString("sales"));
         shopListener = new ShopListener(this, shopAPI, getEconomy(), config.getWhitelistedWorlds());
         getCommand("shop").setExecutor(new HelpCommand());
         getCommand("price").setExecutor(new PriceCommand(shopListener));
         getCommand("buy").setExecutor(new BuyCommand(shopListener));
+    }
+
+    public static void debug(String message)
+    {
+        if (debug)
+            logger.info(message);
     }
 
     private Economy getEconomy()

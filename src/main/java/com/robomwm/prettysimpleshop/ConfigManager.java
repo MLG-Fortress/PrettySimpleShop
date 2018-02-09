@@ -28,6 +28,7 @@ public class ConfigManager
 {
     private JavaPlugin instance;
     private FileConfiguration config;
+    private boolean debug;
     private Map<String, String> messages = new HashMap<>();
     private Set<World> whitelistedWorlds = new HashSet<>();
 
@@ -50,6 +51,7 @@ public class ConfigManager
 
         config.options().copyDefaults(true);
         instance.saveConfig();
+        debug = config.getBoolean("debug", false);
 
         if (config.getBoolean("useWorldWhitelist"))
         {
@@ -68,6 +70,11 @@ public class ConfigManager
         messages.put("sales", messageSection.getString("sales"));
 
         instance.saveConfig();
+    }
+
+    public boolean isDebug()
+    {
+        return debug;
     }
 
     public String getString(String key)
