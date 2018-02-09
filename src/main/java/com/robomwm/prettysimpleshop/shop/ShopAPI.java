@@ -154,7 +154,7 @@ public class ShopAPI
         //Verify item type
         ItemStack shopItem = getItemStack(chest);
         PrettySimpleShop.debug(shopItem.toString() + item.toString());
-        if (isSimilar(item, shopItem))
+        if (!isSimilar(item, shopItem))
             return null;
         PrettySimpleShop.debug("item validated");
         //Verify stock - cap to max stock remaining
