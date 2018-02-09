@@ -65,12 +65,10 @@ public class ShopAPI
         String theName = getName(chest);
         if (theName.isEmpty())
             return false;
-        String[] name = chest.getCustomName().split(" ");
-        if (name.length == 1 && name[0].equals(shopKey))
+        String[] name = theName.split(" ");
+        if (name.length == 1 && name[0].equals(shopKey)) //new shop
             return true;
-        else if (name.length >= 5 && name[0].equals(priceKey) && getRevenue(chest, false) >= 0)
-            return true;
-        return false;
+        return name.length == 5 && getRevenue(chest, false) >= 0;
     }
 
     public boolean setPrice(Chest chest, double newPrice)
@@ -109,7 +107,7 @@ public class ShopAPI
             return -1;
         String[] name = theName.split(" ");
         PrettySimpleShop.debug(String.join(" ", name));
-        if (name.length < 5 || name[4].length() < 2 || !name[4].substring(0, 1).equals("\u00A7\u00A7"))
+        if (name.length < 5 || name[4].length() < 2 || !name[4].substring(0, 2).equals("\u00A7\u00A7"))
             return -1;
         if (name[4].length() < 3)
             return 0;

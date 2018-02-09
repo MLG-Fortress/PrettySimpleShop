@@ -71,17 +71,15 @@ public class ShopListener implements Listener
             return;
 
         Chest chest = (Chest)block.getState();
+        if (shopAPI.isShop(chest))
+            return;
         ItemStack item = shopAPI.getItemStack(chest);
         double price = shopAPI.getPrice(chest);
 
         if (price < 0)
         {
-            if (shopAPI.isShop(chest)) //might be a new shop?
-            {
-                selectedShop.put(player, new ShopInfo(block.getLocation(), item, price));
-                player.sendMessage("Shop selected.");
-            }
-            return;
+            selectedShop.put(player, new ShopInfo(block.getLocation(), item, price));
+            player.sendMessage("Shop selected.");
         }
         else if (item == null)
         {
