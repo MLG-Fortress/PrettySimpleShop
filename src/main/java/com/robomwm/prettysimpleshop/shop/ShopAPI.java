@@ -186,7 +186,7 @@ public class ShopAPI
 
         //Update statistics (currently just total sales)
         String[] name = chest.getCustomName().split(" ");
-        long sales = Long.valueOf(name[4]); //TODO: update total revenue, if feasible
+        long sales = Long.valueOf(name[3]); //TODO: update total revenue, if feasible
         sales += item.getAmount();
         chest.setCustomName(StringUtils.join(name, " "));
 
