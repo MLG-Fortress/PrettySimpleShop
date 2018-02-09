@@ -62,11 +62,16 @@ public class ShopAPI
 
     public boolean isShop(Chest chest)
     {
+        return isShop(chest, true);
+    }
+
+    public boolean isShop(Chest chest, boolean includeNew)
+    {
         String theName = getName(chest);
         if (theName.isEmpty())
             return false;
         String[] name = theName.split(" ");
-        if (name.length == 1 && name[0].equals(shopKey)) //new shop
+        if (name.length == 1 && name[0].equals(shopKey) && includeNew) //new shop
             return true;
         return name.length == 5 && getRevenue(chest, false) >= 0;
     }

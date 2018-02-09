@@ -13,6 +13,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -56,7 +57,7 @@ public class ShopListener implements Listener
         return allowedWorlds.contains(world);
     }
 
-    //We don't watch BlockDamageEvent as player may be in adventure/creative
+    //We don't watch BlockDamageEvent as player may be in adventure (but uh this event probably doesn't fire in adventure either so... uhm yea... hmmm.
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     private void onLeftClickChest(PlayerInteractEvent event)
     {
@@ -80,6 +81,7 @@ public class ShopListener implements Listener
         {
             selectedShop.put(player, new ShopInfo(block.getLocation(), item, price));
             player.sendMessage("Shop selected.");
+            return;
         }
         else if (item == null)
         {
@@ -108,6 +110,23 @@ public class ShopListener implements Listener
         if (deposit <= 0)
             return;
         Player player = (Player)event.getPlayer();
+        economy.depositPlayer(player, deposit);
+        player.sendMessage("Collected " + economy.format(deposit) + " in sales from this shop.");
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+    private void onBreakShop(BlockBreakEvent event)
+    {
+        Block block = event.getBlock();
+        if (block.getType() != Material.CHEST)
+            return;
+        Chest chest = (Chest)block.getState();
+        if (!shopAPI.isShop(chest))
+            return;
+        double deposit = shopAPI.getRevenue(chest, true);
+        if (deposit <= 0)
+            return;
+        Player player = event.getPlayer();
         economy.depositPlayer(player, deposit);
         player.sendMessage("Collected " + economy.format(deposit) + " in sales from this shop.");
     }
