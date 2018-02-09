@@ -68,7 +68,7 @@ public class ShopAPI
         String[] name = chest.getCustomName().split(" ");
         if (name.length == 1 && name[0].equals(shopKey))
             return true;
-        else if (name.length == 4 && name[0].equals(priceKey) && name[2].equals(salesKey))
+        else if (name.length >= 5 && name[0].equals(priceKey) && getRevenue(chest, false) >= 0)
             return true;
         return false;
     }
@@ -80,7 +80,7 @@ public class ShopAPI
             return false;
         String[] name = chest.getCustomName().split(" ");
         if (name.length == 1 && name[0].equals(shopKey))
-            return setName(chest, priceKey + " " + Double.toString(newPrice) + " " + salesKey + " 0 0");
+            return setName(chest, priceKey + " " + Double.toString(newPrice) + " " + salesKey + " 0 \u00A7\u00A7");
         else if (!name[0].equals(priceKey))
             return false;
 
@@ -99,6 +99,25 @@ public class ShopAPI
             return -1;
         else
             return Double.parseDouble(name[1]);
+    }
+
+    public double getRevenue(Chest chest, boolean reset)
+    {
+        String theName = getName(chest);
+        double revenue;
+        if (theName == null || theName.isEmpty())
+            return -1;
+        String[] name = theName.split(" ");
+        if (name.length < 5 || name[4].length() < 3 || !name[4].substring(0, 1).equals("\u00A7\u00A7"))
+            return 0;
+        revenue = Double.parseDouble(name[4].substring(2));
+        if (reset)
+        {
+            name[4] = "\u00A7\u00A7";
+            if (!setName(chest, StringUtils.join(name, " ")))
+                return 0;
+        }
+        return revenue;
     }
 
     /**
@@ -180,9 +199,12 @@ public class ShopAPI
         if (item.getAmount() > shopItem.getAmount())
             item.setAmount(shopItem.getAmount());
 
-        //Update statistics first, otherwise will overwrite inventory changes
+        //Update statistics/revenue first, otherwise will overwrite inventory changes
         String[] name = getName(chest).split(" ");
-        name[3] = Long.toString(Long.valueOf(name[3]) + item.getAmount()); //TODO: store money
+        name[3] = Long.toString(Long.valueOf(name[3]) + item.getAmount());
+        double revenue = getRevenue(chest, false);
+        revenue += item.getAmount() * price;
+        name[4] = "\u00A7\u00A7" + Double.toString(revenue);
         if (!setName(chest, StringUtils.join(name, " ")))
             return null;
 

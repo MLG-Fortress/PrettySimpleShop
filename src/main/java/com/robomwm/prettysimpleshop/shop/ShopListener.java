@@ -6,11 +6,14 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
+import org.bukkit.block.DoubleChest;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
@@ -55,7 +58,7 @@ public class ShopListener implements Listener
 
     //We don't watch BlockDamageEvent as player may be in adventure/creative
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
-    private void onOpenChest(PlayerInteractEvent event)
+    private void onLeftClickChest(PlayerInteractEvent event)
     {
         Player player = event.getPlayer();
         if (event.getAction() != Action.LEFT_CLICK_BLOCK || player.isSneaking())
@@ -71,13 +74,18 @@ public class ShopListener implements Listener
         ItemStack item = shopAPI.getItemStack(chest);
         double price = shopAPI.getPrice(chest);
 
-        if (item == null || price < 0)
+        if (price < 0)
         {
             if (shopAPI.isShop(chest)) //might be a new shop?
             {
                 selectedShop.put(player, new ShopInfo(block.getLocation(), item, price));
                 player.sendMessage("Shop selected.");
             }
+            return;
+        }
+        else if (item == null)
+        {
+            player.sendMessage("This shop is out of stock!");
             return;
         }
 
@@ -87,6 +95,23 @@ public class ShopListener implements Listener
 
         player.sendMessage(item.getI18NDisplayName() + " @ " + economy.format(price) + " each. " + item.getAmount() + " available.");
         player.sendMessage("/buy <quantity>");
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+    private void onOpenInventory(InventoryOpenEvent event)
+    {
+        if (event.getPlayer().getType() != EntityType.PLAYER)
+            return;
+        if (event.getInventory().getLocation() == null)
+            return;
+        if (!(event.getInventory().getHolder() instanceof Chest || event.getInventory().getHolder() instanceof DoubleChest))
+            return;
+        double deposit = shopAPI.getRevenue(shopAPI.getChest(event.getInventory().getLocation()), true);
+        if (deposit <= 0)
+            return;
+        Player player = (Player)event.getPlayer();
+        economy.depositPlayer(player, deposit);
+        player.sendMessage("Collected " + economy.format(deposit) + " in sales from this shop.");
     }
 
     public void buyCommand(Player player, int amount)
