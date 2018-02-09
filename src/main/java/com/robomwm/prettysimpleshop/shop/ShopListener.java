@@ -72,13 +72,21 @@ public class ShopListener implements Listener
         double price = shopAPI.getPrice(chest);
 
         if (item == null || price < 0)
+        {
+            if (shopAPI.isShop(chest)) //might be a new shop?
+            {
+                selectedShop.put(player, new ShopInfo(block.getLocation(), item, price));
+                player.sendMessage("Shop selected.");
+            }
             return;
+        }
+
+        selectedShop.put(player, new ShopInfo(block.getLocation(), item, price));
 
         //TODO: Use fancy json, potentially fire event for custom plugins (e.g. anvil GUI, if we can manage to stick itemstack in it)
 
         player.sendMessage(item.getType().name() + " @ " + economy.format(price) + " each. " + item.getAmount() + "available.");
         player.sendMessage("/buy <quantity>");
-        selectedShop.put(player, new ShopInfo(block.getLocation(), item, price));
     }
 
     public void buyCommand(Player player, int amount)
@@ -87,6 +95,12 @@ public class ShopListener implements Listener
         if (shopInfo == null)
         {
             player.sendMessage("Select a shop via left-clicking its chest.");
+            return;
+        }
+
+        if (shopInfo.getPrice() < 0)
+        {
+            player.sendMessage("This shop is not open for sale yet! If you are the owner, use /price <price> to set the price per item.");
             return;
         }
 

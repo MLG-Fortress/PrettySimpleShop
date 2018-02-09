@@ -55,6 +55,18 @@ public class ShopAPI
         return item;
     }
 
+    public boolean isShop(Chest chest)
+    {
+        if (chest == null || chest.getCustomName() == null || chest.getCustomName().isEmpty())
+            return false;
+        String[] name = chest.getCustomName().split(" ");
+        if (name.length == 1 && name[0].equals(shopKey))
+            return true;
+        else if (name.length == 4 && name[0].equals(priceKey) && name[2].equals(salesKey))
+            return true;
+        return false;
+    }
+
     public boolean setPrice(Chest chest, double newPrice)
     {
         if (chest == null || chest.getCustomName() == null || chest.getCustomName().isEmpty())
@@ -93,11 +105,9 @@ public class ShopAPI
      */
     private Inventory getInventory(Chest chest)
     {
+        if (!isShop(chest))
+            return null;
         Inventory inventory;
-        if (chest.getCustomName() == null || chest.getCustomName().isEmpty())
-            return null;
-        if (!chest.getCustomName().split(" ")[0].equals(priceKey))
-            return null;
         inventory = chest.getBlockInventory();
         //Might not need to do this check; could just get the holder's inventory regardless if double or not...?
         if (inventory.getHolder() instanceof DoubleChest)
