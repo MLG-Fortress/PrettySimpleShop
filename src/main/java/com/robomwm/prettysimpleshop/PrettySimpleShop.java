@@ -19,8 +19,9 @@ import java.util.logging.Logger;
 public class PrettySimpleShop extends JavaPlugin
 {
     private Economy economy;
-    private ShopListener shopListener;
     private static boolean debug;
+    private ShopAPI shopAPI;
+    private ConfigManager config;
 
     public void onEnable()
     {
@@ -31,13 +32,23 @@ public class PrettySimpleShop extends JavaPlugin
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
-        ConfigManager config = new ConfigManager(this);
+        config = new ConfigManager(this);
         debug = config.isDebug();
-        ShopAPI shopAPI = new ShopAPI(config.getString("shopName"), config.getString("price"), config.getString("sales"));
-        shopListener = new ShopListener(this, shopAPI, getEconomy(), config.getWhitelistedWorlds());
+        shopAPI = new ShopAPI(config.getString("shopName"), config.getString("price"), config.getString("sales"));
+        ShopListener shopListener = new ShopListener(this, shopAPI, getEconomy(), config);
         getCommand("shop").setExecutor(new HelpCommand());
-        getCommand("price").setExecutor(new PriceCommand(shopListener));
+        getCommand("setprice").setExecutor(new PriceCommand(shopListener));
         getCommand("buy").setExecutor(new BuyCommand(shopListener));
+    }
+
+    public ShopAPI getShopAPI()
+    {
+        return shopAPI;
+    }
+
+    public ConfigManager getConfigManager()
+    {
+        return config;
     }
 
     public static void debug(Object message)

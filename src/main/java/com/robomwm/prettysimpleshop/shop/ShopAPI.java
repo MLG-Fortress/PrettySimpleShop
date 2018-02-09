@@ -163,7 +163,10 @@ public class ShopAPI
             return chest.getCustomName();
         }
         DoubleChest doubleChest = (DoubleChest)chest.getInventory().getHolder();
-        return ((Chest)doubleChest.getLeftSide()).getCustomName(); //Left side takes precedence
+        //Left side takes precedence, but we'll override if the right side is a shop and the left side isn't
+        if (!isShop((Chest)doubleChest.getLeftSide(), false) && isShop(((Chest)doubleChest.getRightSide())))
+            return ((Chest)doubleChest.getRightSide()).getCustomName();
+        return ((Chest)doubleChest.getLeftSide()).getCustomName();
     }
 
     private boolean setName(Chest chest, String name)

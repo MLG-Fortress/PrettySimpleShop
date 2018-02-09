@@ -82,9 +82,9 @@ public class ConfigManager
         return formatter(messages.get(key));
     }
 
-    public Set<World> getWhitelistedWorlds() //may want to consider returning unmodifiable collection
+    public boolean isWhitelistedWorld(World world) //may want to consider returning unmodifiable collection
     {
-        return whitelistedWorlds;
+        return whitelistedWorlds.isEmpty() || whitelistedWorlds.contains(world);
     }
 
     /*Utility methods*/

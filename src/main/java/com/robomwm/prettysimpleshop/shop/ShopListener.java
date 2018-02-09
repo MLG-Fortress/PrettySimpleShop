@@ -1,5 +1,8 @@
 package com.robomwm.prettysimpleshop.shop;
 
+import com.robomwm.prettysimpleshop.ConfigManager;
+import com.robomwm.prettysimpleshop.event.ShopBoughtEvent;
+import com.robomwm.prettysimpleshop.event.ShopPricedEvent;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -31,16 +34,18 @@ import java.util.Set;
  */
 public class ShopListener implements Listener
 {
+    private JavaPlugin instance;
     private ShopAPI shopAPI;
-    private Set<World> allowedWorlds;
     private Economy economy;
     private Map<Player, ShopInfo> selectedShop = new HashMap<>();
+    private ConfigManager config;
 
-    public ShopListener(JavaPlugin plugin, ShopAPI shopAPI, Economy economy, Set<World> enabledWorlds)
+    public ShopListener(JavaPlugin plugin, ShopAPI shopAPI, Economy economy, ConfigManager configManager)
     {
+        instance = plugin;
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
         this.shopAPI = shopAPI;
-        this.allowedWorlds = enabledWorlds;
+        this.config = configManager;
         this.economy = economy;
     }
 
@@ -52,9 +57,7 @@ public class ShopListener implements Listener
 
     private boolean isEnabledWorld(World world)
     {
-        if (allowedWorlds.isEmpty())
-            return true;
-        return allowedWorlds.contains(world);
+        return config.isWhitelistedWorld(world);
     }
 
     //We don't watch BlockDamageEvent as player may be in adventure (but uh this event probably doesn't fire in adventure either so... uhm yea... hmmm.
@@ -97,6 +100,7 @@ public class ShopListener implements Listener
         player.sendMessage("/buy <quantity>");
     }
 
+    //Collect revenues
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     private void onOpenInventory(InventoryOpenEvent event)
     {
@@ -113,7 +117,6 @@ public class ShopListener implements Listener
         economy.depositPlayer(player, deposit);
         player.sendMessage("Collected " + economy.format(deposit) + " in sales from this shop.");
     }
-
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     private void onBreakShop(BlockBreakEvent event)
     {
@@ -131,25 +134,26 @@ public class ShopListener implements Listener
         player.sendMessage("Collected " + economy.format(deposit) + " in sales from this shop.");
     }
 
-    public void buyCommand(Player player, int amount)
+    //Commands cuz well all the data's here so yea
+    public boolean buyCommand(Player player, int amount)
     {
         ShopInfo shopInfo = selectedShop.remove(player);
         if (shopInfo == null)
         {
             player.sendMessage("Select a shop via left-clicking its chest.");
-            return;
+            return false;
         }
 
         if (shopInfo.getPrice() < 0)
         {
             player.sendMessage("This shop is not open for sale yet! If you are the owner, use /price <price> to set the price per item.");
-            return;
+            return false;
         }
 
         if (economy.getBalance(player) < amount * shopInfo.getPrice())
         {
             player.sendMessage("Transaction canceled: Insufficient /money. Try again with a smaller quantity?");
-            return;
+            return false;
         }
 
         shopInfo.getItem().setAmount(amount);
@@ -157,14 +161,14 @@ public class ShopListener implements Listener
         if (!hasInventorySpace(player, shopInfo.getItem()))
         {
             player.sendMessage("Transaction canceled: Insufficient inventory space. Free up some inventory slots or try again with a smaller quantity.");
-            return;
+            return false;
         }
 
         ItemStack itemStack = shopAPI.performTransaction(shopAPI.getChest(shopInfo.getLocation()), shopInfo.getItem(), shopInfo.getPrice());
         if (itemStack == null)
         {
             player.sendMessage("Transaction canceled: Shop was modified. Please try again.");
-            return;
+            return false;
         }
 
         economy.withdrawPlayer(player, itemStack.getAmount() * shopInfo.getPrice());
@@ -173,15 +177,17 @@ public class ShopListener implements Listener
 
         player.sendMessage("Transaction completed. Bought " + itemStack.getAmount() + " " + itemStack.getType().name() + " for " + economy.format(itemStack.getAmount() * shopInfo.getPrice()));
 
+        instance.getServer().getPluginManager().callEvent(new ShopBoughtEvent(player, shopInfo));
+
         if (!leftovers.isEmpty())
         {
             player.sendMessage("Somehow you bought more than you can hold and we didn't detect this. Please report this issue with the following debug info:");
             for (ItemStack itemStack1 : leftovers.values())
                 player.sendMessage(itemStack1.toString());
-            return;
+            return true;
         }
+        return true;
     }
-
     public void priceCommand(Player player, double price)
     {
         ShopInfo shopInfo = selectedShop.remove(player);
@@ -191,6 +197,7 @@ public class ShopListener implements Listener
             return;
         }
         player.sendMessage("Price updated. Open chest and view title to confirm.");
+        instance.getServer().getPluginManager().callEvent(new ShopPricedEvent(player, shopInfo, price));
     }
 
     //https://www.spigotmc.org/threads/detecting-when-a-players-inventory-is-almost-full.132061/#post-1401285

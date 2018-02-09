@@ -10,10 +10,10 @@ loadbefore:
 - WorldGuard
 - GriefPrevention
 commands:
-  price:
-    usage: /price <price> - Changes the price per item of the selected shop (select a shop via left-clicking its chest).
+  setprice:
+    usage: /setprice <price> - Changes the price per item of the selected shop (select a shop via left-clicking its chest).
   buy:
     usage: /buy <quantity> - Attempts to buy <quantity> amount from the selected shop (select a shop via left-clicking its chest).
   shop:
-    usage: /price, /buy
+    usage: See /setprice, /buy
     aliases: [simpleshop, prettysimpleshop, pshop, psshop, sshop]
