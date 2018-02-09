@@ -137,7 +137,7 @@ public class ShopAPI
         {
             return chest.getCustomName();
         }
-        DoubleChest doubleChest = (DoubleChest)chest;
+        DoubleChest doubleChest = (DoubleChest)chest.getInventory().getHolder();
         return ((Chest)doubleChest.getLeftSide()).getCustomName(); //Left side takes precedence
     }
 
