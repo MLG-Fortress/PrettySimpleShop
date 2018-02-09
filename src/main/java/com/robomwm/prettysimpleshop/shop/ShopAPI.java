@@ -109,7 +109,9 @@ public class ShopAPI
             return -1;
         String[] name = theName.split(" ");
         PrettySimpleShop.debug(String.join(" ", name));
-        if (name.length < 5 || name[4].length() < 3 || !name[4].substring(0, 1).equals("\u00A7\u00A7"))
+        if (name.length < 5 || name[4].length() < 2 || !name[4].substring(0, 1).equals("\u00A7\u00A7"))
+            return -1;
+        if (name[4].length() < 3)
             return 0;
         revenue = Double.parseDouble(name[4].substring(2));
         if (reset)
