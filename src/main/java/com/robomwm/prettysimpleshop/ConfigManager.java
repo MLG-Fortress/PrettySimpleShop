@@ -36,10 +36,17 @@ public class ConfigManager
     {
         instance = plugin;
         config = instance.getConfig();
-        config.addDefault("useWorldWhitelist", true);
+        config.addDefault("useWorldWhitelist", false);
         List<String> whitelist = new ArrayList<>();
         whitelist.add("mall");
         config.addDefault("worldWhitelist", whitelist);
+
+        ConfigurationSection messageSection = config.getConfigurationSection("messages");
+        if (messageSection == null)
+            messageSection = config.createSection("messages");
+        messageSection.addDefault("shopName", "shop");
+        messageSection.addDefault("price", "Price:");
+        messageSection.addDefault("sales", "Sales:");
 
         config.options().copyDefaults(true);
         instance.saveConfig();
@@ -56,14 +63,9 @@ public class ConfigManager
             }
         }
 
-        //Messages
-        ConfigurationSection messageSection = config.getConfigurationSection("messages");
-        if (messageSection == null)
-            messageSection = config.createSection("messages");
-
-        messages.put("shopName", messageSection.getString("shopName", "shop"));
-        messages.put("price", messageSection.getString("price", "Price:"));
-        messages.put("sales", messageSection.getString("sales", "Sales:"));
+        messages.put("shopName", messageSection.getString("shopName"));
+        messages.put("price", messageSection.getString("price"));
+        messages.put("sales", messageSection.getString("sales"));
 
         instance.saveConfig();
     }

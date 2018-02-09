@@ -75,7 +75,7 @@ public class ShopAPI
         if (name.length == 1 && name[0].equals(shopKey))
         {
             chest.setCustomName(priceKey + " " + Double.toString(newPrice) + " " + salesKey + " 0"); //TODO: include total revenue, if feasible
-            return true;
+            return chest.update();
         }
         else if (!name[0].equals(priceKey))
             return false;
