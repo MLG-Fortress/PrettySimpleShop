@@ -67,13 +67,15 @@ public class ShopAPI
 
     public boolean isShop(Chest chest, boolean includeNew)
     {
-        String theName = getName(chest);
-        if (theName.isEmpty())
-            return false;
+        return isShop(getName(chest), includeNew);
+    }
+
+    private boolean isShop(String theName, boolean includeNew)
+    {
         String[] name = theName.split(" ");
         if (name.length == 1 && name[0].equals(shopKey) && includeNew) //new shop
             return true;
-        return name.length == 5 && getRevenue(chest, false) >= 0;
+        return name.length == 5 && name[4].startsWith("\u00A7\u00A7");
     }
 
     public boolean setPrice(Chest chest, double newPrice)
@@ -175,7 +177,7 @@ public class ShopAPI
         }
         DoubleChest doubleChest = (DoubleChest)chest.getInventory().getHolder();
         //Left side takes precedence, but we'll override if the right side is a shop and the left side isn't
-        if (!isShop((Chest)doubleChest.getLeftSide(), false) && isShop(((Chest)doubleChest.getRightSide())))
+        if (!isShop(((Chest)doubleChest.getLeftSide()).getCustomName(), false) && isShop((((Chest)doubleChest.getRightSide())).getCustomName(), true))
             return ((Chest)doubleChest.getRightSide()).getCustomName();
         return ((Chest)doubleChest.getLeftSide()).getCustomName();
     }
