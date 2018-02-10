@@ -91,7 +91,7 @@ public class ShopAPI
         PrettySimpleShop.debug("setPrice:" + theName + ";");
         if (!isShop(theName, true))
             return false;
-        String[] name = chest.getCustomName().split(" ");
+        String[] name = theName.split(" ");
         PrettySimpleShop.debug("setPrice:" + name.length);
         if (name.length == 1 && name[0].equals(shopKey))
             return setName(chest, priceKey + " " + Double.toString(newPrice) + " " + salesKey + " 0 \u00A7\u00A7");
