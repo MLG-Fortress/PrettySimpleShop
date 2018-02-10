@@ -30,8 +30,10 @@ public class ConfigManager
     private FileConfiguration config;
     private boolean debug;
     private Map<String, String> messages = new HashMap<>();
+    private Map<String, String> tips = new HashMap<>();
     private Set<World> whitelistedWorlds = new HashSet<>();
 
+    private Map<Player, String> lastSeenTip = new HashMap<>();
 
     public ConfigManager(JavaPlugin plugin)
     {
@@ -48,6 +50,12 @@ public class ConfigManager
         messageSection.addDefault("shopName", "shop");
         messageSection.addDefault("price", "Price:");
         messageSection.addDefault("sales", "Sales:");
+        messageSection.addDefault("saleInfo", "{0} @ &e{1}&r. {2} available");
+
+        ConfigurationSection tipSection = config.getConfigurationSection("tips");
+        if (tipSection == null)
+            tipSection = config.createSection("tips");
+        tipSection.addDefault("saleInfo", "Hover for item details. /buy <quantity>");
 
         config.options().copyDefaults(true);
         instance.saveConfig();
@@ -68,6 +76,9 @@ public class ConfigManager
         messages.put("shopName", messageSection.getString("shopName"));
         messages.put("price", messageSection.getString("price"));
         messages.put("sales", messageSection.getString("sales"));
+        messages.put("saleInfo", messageSection.getString("saleInfo"));
+
+        tips.put("saleInfo", tipSection.getString("saleInfo"));
 
         instance.saveConfig();
     }
@@ -75,6 +86,22 @@ public class ConfigManager
     public boolean isDebug()
     {
         return debug;
+    }
+
+    public void sendTip(Player player, String key)
+    {
+        if (lastSeenTip.containsKey(player) && lastSeenTip.get(player).equals(key))
+            return;
+        lastSeenTip.put(player, key);
+        String message = formatter(tips.get(key));
+        if (message.isEmpty())
+            return;
+        player.sendMessage(message);
+    }
+
+    public String getString(String key, String... formatees)
+    {
+        return formatter(messages.get(key), formatees);
     }
 
     public String getString(String key)
@@ -98,7 +125,7 @@ public class ConfigManager
         return ChatColor.translateAlternateColorCodes('&', stringToFormat);
     }
 
-    /*Private methods, for now*/
+    //String.format or whatever it was does weird stuff and doesn't like certain characters in the string when parsing {0} stuff so yea...
 
     private String argParser(String stringToFill, String... args)
     {

@@ -2,9 +2,14 @@ package com.robomwm.prettysimpleshop.shop;
 
 import com.robomwm.prettysimpleshop.ConfigManager;
 import com.robomwm.prettysimpleshop.PrettySimpleShop;
+import com.robomwm.prettysimpleshop.ReflectionHandler;
 import com.robomwm.prettysimpleshop.event.ShopBoughtEvent;
 import com.robomwm.prettysimpleshop.event.ShopPricedEvent;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.milkbowl.vault.economy.Economy;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -24,6 +29,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -41,6 +47,10 @@ public class ShopListener implements Listener
     private Map<Player, ShopInfo> selectedShop = new HashMap<>();
     private ConfigManager config;
 
+    private Method asNMSCopy; //CraftItemStack#asNMSCopy(ItemStack);
+    private Method saveNMSItemStack; //n.m.s.ItemStack#save(compound);
+    private Class<?> NBTTagCompoundClazz; //n.m.s.NBTTagCompound;
+
     public ShopListener(JavaPlugin plugin, ShopAPI shopAPI, Economy economy, ConfigManager configManager)
     {
         instance = plugin;
@@ -48,6 +58,18 @@ public class ShopListener implements Listener
         this.shopAPI = shopAPI;
         this.config = configManager;
         this.economy = economy;
+
+        try
+        {
+            asNMSCopy = ReflectionHandler.getMethod("CraftItemStack", ReflectionHandler.PackageType.CRAFTBUKKIT_INVENTORY, "asNMSCopy", ItemStack.class);
+            NBTTagCompoundClazz = ReflectionHandler.PackageType.MINECRAFT_SERVER.getClass("NBTTagCompound");
+            saveNMSItemStack = ReflectionHandler.getMethod("ItemStack", ReflectionHandler.PackageType.MINECRAFT_SERVER, "save", NBTTagCompoundClazz);
+        }
+        catch (Exception e)
+        {
+            instance.getLogger().warning("Reflection failed, will use legacy, non-hoverable, boring text.");
+            e.printStackTrace();
+        }
     }
 
     @EventHandler
@@ -95,10 +117,32 @@ public class ShopListener implements Listener
 
         selectedShop.put(player, new ShopInfo(block.getLocation(), item, price));
 
-        //TODO: Use fancy json, potentially fire event for custom plugins (e.g. anvil GUI, if we can manage to stick itemstack in it)
+        //TODO: fire event for custom plugins (e.g. anvil GUI, if we can manage to stick itemstack in it)
+        
+        String textToSend = config.getString("saleInfo", PrettySimpleShop.getItemName(item), economy.format(price), Integer.toString(item.getAmount()));
+        String json;
+        try
+        {
+            Object nmsItemStack = asNMSCopy.invoke(null, item); //CraftItemStack#asNMSCopy(itemStack); //nms version of the ItemStack
+            Object nbtTagCompound = NBTTagCompoundClazz.newInstance(); //new NBTTagCompoundClazz(); //get a new NBTTagCompound, which will contain the nmsItemStack.
+            nbtTagCompound = saveNMSItemStack.invoke(nmsItemStack, nbtTagCompound); //nmsItemStack#save(nbtTagCompound); //saves nmsItemStack into our new NBTTagCompound
+            json = nbtTagCompound.toString();
+        }
+        catch (Throwable rock)
+        {
+            player.sendMessage(textToSend);
+            return;
+        }
 
-        player.sendMessage(PrettySimpleShop.getItemName(item) + " @ " + economy.format(price) + " each. " + item.getAmount() + " available.");
-        player.sendMessage("/buy <quantity>");
+        BaseComponent[] hoverEventComponents = new BaseComponent[]
+                {
+                        new TextComponent(json)
+                };
+        HoverEvent hover = new HoverEvent(HoverEvent.Action.SHOW_ITEM, hoverEventComponents);
+        TextComponent text = new TextComponent(textToSend);
+        text.setHoverEvent(hover);
+        player.sendMessage(text);
+        config.sendTip(player, "saleInfo");
     }
 
     //Collect revenues
