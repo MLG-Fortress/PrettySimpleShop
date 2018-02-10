@@ -11,7 +11,7 @@ loadbefore:
 - GriefPrevention
 commands:
   setprice:
-    usage: /setprice <price> - Changes the price per item of the selected shop (select a shop via left-clicking its chest).
+    usage: /setprice <price> - Sets the price per item of a shop.
   buy:
     usage: /buy <quantity> - Attempts to buy <quantity> amount from the selected shop (select a shop via left-clicking its chest).
   shop:

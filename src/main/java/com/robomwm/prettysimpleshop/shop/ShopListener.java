@@ -5,6 +5,7 @@ import com.robomwm.prettysimpleshop.PrettySimpleShop;
 import com.robomwm.prettysimpleshop.ReflectionHandler;
 import com.robomwm.prettysimpleshop.event.ShopBoughtEvent;
 import com.robomwm.prettysimpleshop.event.ShopPricedEvent;
+import com.robomwm.prettysimpleshop.event.ShopViewEvent;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -45,6 +46,7 @@ public class ShopListener implements Listener
     private ShopAPI shopAPI;
     private Economy economy;
     private Map<Player, ShopInfo> selectedShop = new HashMap<>();
+    private Map<Player, Double> priceSetter = new HashMap<>();
     private ConfigManager config;
 
     private Method asNMSCopy; //CraftItemStack#asNMSCopy(ItemStack);
@@ -115,10 +117,15 @@ public class ShopListener implements Listener
             return;
         }
 
-        selectedShop.put(player, new ShopInfo(block.getLocation(), item, price));
+        ShopInfo shopInfo = new ShopInfo(block.getLocation(), item, price);
+        selectedShop.put(player, shopInfo);
 
         //TODO: fire event for custom plugins (e.g. anvil GUI, if we can manage to stick itemstack in it)
-        
+        ShopViewEvent shopViewEvent = new ShopViewEvent(player, shopInfo);
+        instance.getServer().getPluginManager().callEvent(shopViewEvent);
+        if (shopViewEvent.isCancelled())
+            return;
+
         String textToSend = config.getString("saleInfo", PrettySimpleShop.getItemName(item), economy.format(price), Integer.toString(item.getAmount()));
         String json;
         try
@@ -155,10 +162,20 @@ public class ShopListener implements Listener
             return;
         if (!(event.getInventory().getHolder() instanceof Chest || event.getInventory().getHolder() instanceof DoubleChest))
             return;
-        double deposit = shopAPI.getRevenue(shopAPI.getChest(event.getInventory().getLocation()), true);
+        Player player = (Player)event.getPlayer();
+        Chest chest = shopAPI.getChest(event.getInventory().getLocation());
+
+        if (priceSetter.containsKey(player) && shopAPI.isShop(chest))
+        {
+            double newPrice = priceSetter.remove(player);
+            shopAPI.setPrice(chest, newPrice);
+            player.sendMessage("Price updated to " + economy.format(newPrice));
+            instance.getServer().getPluginManager().callEvent(new ShopPricedEvent(player, chest.getLocation(), newPrice));
+        }
+
+        double deposit = shopAPI.getRevenue(chest, true);
         if (deposit <= 0)
             return;
-        Player player = (Player)event.getPlayer();
         economy.depositPlayer(player, deposit);
         player.sendMessage("Collected " + economy.format(deposit) + " in sales from this shop.");
     }
@@ -235,14 +252,10 @@ public class ShopListener implements Listener
     }
     public void priceCommand(Player player, double price)
     {
-        ShopInfo shopInfo = selectedShop.remove(player);
-        if (shopInfo == null || !shopAPI.setPrice(shopAPI.getChest(shopInfo.getLocation()), price))
-        {
-            player.sendMessage("Select a shop via left-clicking its chest.");
-            return;
-        }
-        player.sendMessage("Price updated. Open chest and view title to confirm.");
-        instance.getServer().getPluginManager().callEvent(new ShopPricedEvent(player, shopInfo, price));
+
+        selectedShop.remove(player);
+        priceSetter.put(player, price);
+        player.sendMessage("Open the shop to apply this new price.");
     }
 
     //https://www.spigotmc.org/threads/detecting-when-a-players-inventory-is-almost-full.132061/#post-1401285

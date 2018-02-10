@@ -171,18 +171,13 @@ public class ShowoffItem implements Listener
     @EventHandler
     private void onShopPriced(ShopPricedEvent event)
     {
-        updateItemFromEvent(event.getShopInfo());
+        spawnItem((Chest)event.getLocation().getBlock().getState());
     }
 
     @EventHandler
     private void onShopBought(ShopBoughtEvent event)
     {
-        updateItemFromEvent(event.getShopInfo());
-    }
-
-    private void updateItemFromEvent(ShopInfo shopInfo)
-    {
-        spawnItem((Chest)shopInfo.getLocation().getBlock().getState());
+        spawnItem((Chest)event.getShopInfo().getLocation().getBlock().getState());
     }
 
     private boolean spawnItem(Chest chest)
