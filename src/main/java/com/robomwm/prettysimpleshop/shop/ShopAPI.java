@@ -147,6 +147,7 @@ public class ShopAPI
         return item1 != null && item1.isSimilar(item2);
     }
 
+    //helper/convenience method
     public Chest getChest(Location location)
     {
         if (location.getBlock() == null)
@@ -154,6 +155,16 @@ public class ShopAPI
         if (!(location.getBlock().getState() instanceof Chest))
             return null;
         return (Chest)location.getBlock().getState();
+    }
+
+    //helper method that returns the location of a shop - DoubleChest conveniently returns the middle between the two chests.
+    public Location getLocation(Chest chest)
+    {
+        if (!(chest.getInventory().getHolder() instanceof DoubleChest))
+        {
+            return chest.getLocation();
+        }
+        return ((DoubleChest)chest.getInventory().getHolder()).getLocation();
     }
 
     private String getName(Chest chest)

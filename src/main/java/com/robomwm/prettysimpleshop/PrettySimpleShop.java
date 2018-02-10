@@ -6,6 +6,8 @@ import com.robomwm.prettysimpleshop.command.PriceCommand;
 import com.robomwm.prettysimpleshop.shop.ShopAPI;
 import com.robomwm.prettysimpleshop.shop.ShopListener;
 import net.milkbowl.vault.economy.Economy;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -39,6 +41,20 @@ public class PrettySimpleShop extends JavaPlugin
         getCommand("shop").setExecutor(new HelpCommand());
         getCommand("setprice").setExecutor(new PriceCommand(shopListener));
         getCommand("buy").setExecutor(new BuyCommand(shopListener));
+    }
+
+    public static String getItemName(ItemStack item)
+    {
+        if (item.hasItemMeta() && ((ItemMeta)item).hasDisplayName())
+            return ((ItemMeta)item).getDisplayName();
+        try
+        {
+            return item.getI18NDisplayName();
+        }
+        catch (Throwable rock)
+        {
+            return item.getType().name().toLowerCase().replaceAll("_", " ");
+        }
     }
 
     public ShopAPI getShopAPI()

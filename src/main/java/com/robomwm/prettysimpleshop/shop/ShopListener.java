@@ -1,6 +1,7 @@
 package com.robomwm.prettysimpleshop.shop;
 
 import com.robomwm.prettysimpleshop.ConfigManager;
+import com.robomwm.prettysimpleshop.PrettySimpleShop;
 import com.robomwm.prettysimpleshop.event.ShopBoughtEvent;
 import com.robomwm.prettysimpleshop.event.ShopPricedEvent;
 import net.milkbowl.vault.economy.Economy;
@@ -96,7 +97,7 @@ public class ShopListener implements Listener
 
         //TODO: Use fancy json, potentially fire event for custom plugins (e.g. anvil GUI, if we can manage to stick itemstack in it)
 
-        player.sendMessage(item.getI18NDisplayName() + " @ " + economy.format(price) + " each. " + item.getAmount() + " available.");
+        player.sendMessage(PrettySimpleShop.getItemName(item) + " @ " + economy.format(price) + " each. " + item.getAmount() + " available.");
         player.sendMessage("/buy <quantity>");
     }
 
