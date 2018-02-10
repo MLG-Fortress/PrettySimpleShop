@@ -186,14 +186,14 @@ public class ShopListener implements Listener
         if (block.getType() != Material.CHEST)
             return;
         Chest chest = (Chest)block.getState();
-        if (!shopAPI.isShop(chest))
+        if (!shopAPI.isShop(chest) || shopAPI.isDoubleChest(chest))
             return;
         double deposit = shopAPI.getRevenue(chest, true);
         if (deposit <= 0)
             return;
         Player player = event.getPlayer();
         economy.depositPlayer(player, deposit);
-        player.sendMessage("Collected " + economy.format(deposit) + " in sales from this shop.");
+        config.sendMessage(player, "collectRevenue", economy.format(deposit));
     }
 
     //Commands cuz well all the data's here so yea

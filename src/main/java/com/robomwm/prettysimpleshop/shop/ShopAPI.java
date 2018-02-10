@@ -70,6 +70,11 @@ public class ShopAPI
         return isShop(getName(chest), includeNew);
     }
 
+    public boolean isDoubleChest(Chest chest)
+    {
+        return chest.getInventory().getHolder() instanceof DoubleChest;
+    }
+
     private boolean isShop(String theName, boolean includeNew)
     {
         if (theName == null || theName.isEmpty())
@@ -83,7 +88,7 @@ public class ShopAPI
     public boolean setPrice(Chest chest, double newPrice)
     {
         String theName = getName(chest);
-        if (theName.isEmpty())
+        if (isShop(theName, true))
             return false;
         String[] name = chest.getCustomName().split(" ");
         if (name.length == 1 && name[0].equals(shopKey))
@@ -91,6 +96,7 @@ public class ShopAPI
         else if (!name[0].equals(priceKey))
             return false;
 
+        PrettySimpleShop.debug(theName);
         name[1] = Double.toString(newPrice);
 
         return setName(chest, StringUtils.join(name, " "));
@@ -186,7 +192,7 @@ public class ShopAPI
 
     private boolean setName(Chest chest, String name)
     {
-        if (!(chest.getInventory().getHolder() instanceof DoubleChest))
+        if (!isDoubleChest(chest))
         {
             chest.setCustomName(name);
             return chest.update();
