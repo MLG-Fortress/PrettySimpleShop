@@ -203,6 +203,7 @@ public class ShopAPI
         leftChest.setCustomName(name);
         Chest rightChest = (Chest)((Chest)doubleChest.getRightSide()).getBlock().getState();
         rightChest.setCustomName(name);
+        PrettySimpleShop.debug("setName: " + name);
         return leftChest.update() && rightChest.update();
     }
 
