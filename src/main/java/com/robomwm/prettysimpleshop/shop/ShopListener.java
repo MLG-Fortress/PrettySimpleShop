@@ -107,13 +107,13 @@ public class ShopListener implements Listener
 
         if (price < 0)
         {
-            selectedShop.put(player, new ShopInfo(block.getLocation(), item, price));
-            player.sendMessage("Shop selected.");
+            config.sendMessage(player, "noPrice");
             return;
         }
         else if (item == null)
         {
-            player.sendMessage("This shop is out of stock!");
+            config.sendMessage(player, "noStock");
+            config.sendTip(player, "noStock");
             return;
         }
 
@@ -169,7 +169,7 @@ public class ShopListener implements Listener
         {
             double newPrice = priceSetter.remove(player);
             shopAPI.setPrice(chest, newPrice);
-            player.sendMessage("Price updated to " + economy.format(newPrice));
+            config.sendMessage(player, "priceApplied", economy.format(newPrice));
             instance.getServer().getPluginManager().callEvent(new ShopPricedEvent(player, chest.getLocation(), newPrice));
         }
 
@@ -177,7 +177,7 @@ public class ShopListener implements Listener
         if (deposit <= 0)
             return;
         economy.depositPlayer(player, deposit);
-        player.sendMessage("Collected " + economy.format(deposit) + " in sales from this shop.");
+        config.sendMessage(player, "collectRevenue", economy.format(deposit));
     }
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     private void onBreakShop(BlockBreakEvent event)
@@ -202,19 +202,19 @@ public class ShopListener implements Listener
         ShopInfo shopInfo = selectedShop.remove(player);
         if (shopInfo == null)
         {
-            player.sendMessage("Select a shop via left-clicking its chest.");
+            config.sendMessage(player, "noShopSelected");
             return false;
         }
 
         if (shopInfo.getPrice() < 0)
         {
-            player.sendMessage("This shop is not open for sale yet! If you are the owner, use /price <price> to set the price per item.");
+            config.sendMessage(player, "noPrice");
             return false;
         }
 
         if (economy.getBalance(player) < amount * shopInfo.getPrice())
         {
-            player.sendMessage("Transaction canceled: Insufficient /money. Try again with a smaller quantity?");
+            config.sendMessage(player, "noMoney");
             return false;
         }
 
@@ -222,14 +222,14 @@ public class ShopListener implements Listener
 
         if (!hasInventorySpace(player, shopInfo.getItem()))
         {
-            player.sendMessage("Transaction canceled: Insufficient inventory space. Free up some inventory slots or try again with a smaller quantity.");
+            config.sendMessage(player, "noSpace");
             return false;
         }
 
         ItemStack itemStack = shopAPI.performTransaction(shopAPI.getChest(shopInfo.getLocation()), shopInfo.getItem(), shopInfo.getPrice());
         if (itemStack == null)
         {
-            player.sendMessage("Transaction canceled: Shop was modified. Please try again.");
+            config.sendMessage(player, "shopModified");
             return false;
         }
 
@@ -237,7 +237,7 @@ public class ShopListener implements Listener
 
         Map<Integer, ItemStack> leftovers = player.getInventory().addItem(itemStack);
 
-        player.sendMessage("Transaction completed. Bought " + itemStack.getAmount() + " " + itemStack.getType().name() + " for " + economy.format(itemStack.getAmount() * shopInfo.getPrice()));
+        config.sendMessage(player, "transactionCompleted", Integer.toString(itemStack.getAmount()), PrettySimpleShop.getItemName(itemStack), economy.format(itemStack.getAmount() * shopInfo.getPrice()));
 
         instance.getServer().getPluginManager().callEvent(new ShopBoughtEvent(player, shopInfo));
 
@@ -255,7 +255,7 @@ public class ShopListener implements Listener
 
         selectedShop.remove(player);
         priceSetter.put(player, price);
-        player.sendMessage("Open the shop to apply this new price.");
+        config.sendMessage(player, "applyPrice");
     }
 
     //https://www.spigotmc.org/threads/detecting-when-a-players-inventory-is-almost-full.132061/#post-1401285

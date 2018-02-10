@@ -2,6 +2,7 @@ package com.robomwm.prettysimpleshop;
 
 import org.bukkit.ChatColor;
 import org.bukkit.World;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -29,7 +30,8 @@ public class ConfigManager
     private JavaPlugin instance;
     private FileConfiguration config;
     private boolean debug;
-    private Map<String, String> messages = new HashMap<>();
+    private ConfigurationSection messageSection;
+    private ConfigurationSection tipSection;
     private Map<String, String> tips = new HashMap<>();
     private Set<World> whitelistedWorlds = new HashSet<>();
 
@@ -44,18 +46,29 @@ public class ConfigManager
         whitelist.add("mall");
         config.addDefault("worldWhitelist", whitelist);
 
-        ConfigurationSection messageSection = config.getConfigurationSection("messages");
+         messageSection = config.getConfigurationSection("messages");
         if (messageSection == null)
             messageSection = config.createSection("messages");
         messageSection.addDefault("shopName", "shop");
         messageSection.addDefault("price", "Price:");
         messageSection.addDefault("sales", "Sales:");
         messageSection.addDefault("saleInfo", "{0} @ &e{1}&r. {2} available");
+        messageSection.addDefault("noPrice", "&cThis shop is not open for sale yet! &6If you are the owner, use /setprice <price> to open this shop!");
+        messageSection.addDefault("noStock", "&cThis shop is out of stock!");
+        messageSection.addDefault("noMoney", "&cTransaction canceled: Insufficient /money. Try again with a smaller quantity?");
+        messageSection.addDefault("noSpace", "&cTransaction canceled: Insufficient inventory space. Free up some inventory slots or try again with a smaller quantity.");
+        messageSection.addDefault("noShopSelected", "&eSelect a shop via left-clicking its chest.");
+        messageSection.addDefault("shopModified", "&cTransaction canceled: Shop was modified. Please try again.");
+        messageSection.addDefault("transactionCompleted", "Transaction completed. Bought {0} {1} for {2}");
+        messageSection.addDefault("applyPrice", "&bOpen the shop to apply your shiny new price.");
+        messageSection.addDefault("priceApplied", "Price updated to {0}");
+        messageSection.addDefault("collectRevenue", "Collected {0} in sales from this shop");
 
-        ConfigurationSection tipSection = config.getConfigurationSection("tips");
+        tipSection = config.getConfigurationSection("tips");
         if (tipSection == null)
             tipSection = config.createSection("tips");
         tipSection.addDefault("saleInfo", "Hover for item details. /buy <quantity>");
+        tipSection.addDefault("noStock", "If you are the owner, take note that shops must only contain the same item in its inventory.");
 
         config.options().copyDefaults(true);
         instance.saveConfig();
@@ -72,13 +85,6 @@ public class ConfigManager
                     whitelistedWorlds.add(world);
             }
         }
-
-        messages.put("shopName", messageSection.getString("shopName"));
-        messages.put("price", messageSection.getString("price"));
-        messages.put("sales", messageSection.getString("sales"));
-        messages.put("saleInfo", messageSection.getString("saleInfo"));
-
-        tips.put("saleInfo", tipSection.getString("saleInfo"));
 
         instance.saveConfig();
     }
@@ -99,14 +105,28 @@ public class ConfigManager
         player.sendMessage(message);
     }
 
+    public void sendMessage(CommandSender player, String key)
+    {
+        String message = getString(key);
+        if (!message.isEmpty())
+            player.sendMessage(message);
+    }
+
+    public void sendMessage(CommandSender player, String key, String... formatees)
+    {
+        String message = getString(key, formatees);
+        if (!message.isEmpty())
+            player.sendMessage(message);
+    }
+
     public String getString(String key, String... formatees)
     {
-        return formatter(messages.get(key), formatees);
+        return formatter(messageSection.getString(key), formatees);
     }
 
     public String getString(String key)
     {
-        return formatter(messages.get(key));
+        return formatter(messageSection.getString(key));
     }
 
     public boolean isWhitelistedWorld(World world) //may want to consider returning unmodifiable collection

@@ -57,7 +57,7 @@ public class ShowoffItem implements Listener
         config = plugin.getConfigManager();
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
         this.shopAPI = shopAPI;
-        cacheFile = new File(plugin.getDataFolder(), "inventorySnapshots.data");
+        cacheFile = new File(plugin.getDataFolder(), "chunksContainingShops.data");
         if (!cacheFile.exists())
         {
             try
