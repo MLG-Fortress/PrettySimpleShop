@@ -72,6 +72,8 @@ public class ShopAPI
 
     private boolean isShop(String theName, boolean includeNew)
     {
+        if (theName == null || theName.isEmpty())
+            return false;
         String[] name = theName.split(" ");
         if (name.length == 1 && name[0].equals(shopKey) && includeNew) //new shop
             return true;
