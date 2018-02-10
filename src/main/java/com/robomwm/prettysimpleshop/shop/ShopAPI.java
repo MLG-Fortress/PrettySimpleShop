@@ -88,6 +88,7 @@ public class ShopAPI
     public boolean setPrice(Chest chest, double newPrice)
     {
         String theName = getName(chest);
+        PrettySimpleShop.debug("setPrice:" + theName + ";");
         if (isShop(theName, true))
             return false;
         String[] name = chest.getCustomName().split(" ");
@@ -96,7 +97,6 @@ public class ShopAPI
         else if (!name[0].equals(priceKey))
             return false;
 
-        PrettySimpleShop.debug(theName);
         name[1] = Double.toString(newPrice);
 
         return setName(chest, StringUtils.join(name, " "));
