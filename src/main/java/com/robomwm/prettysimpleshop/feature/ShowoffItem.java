@@ -253,6 +253,13 @@ public class ShowoffItem implements Listener
     {
         return chunk.getWorld().getName() + chunk.getX() + "," + chunk.getZ();
     }
+
+    public void despawnAll()
+    {
+        for (Item item : spawnedItems.values())
+            item.remove();
+        spawnedItems.clear();
+    }
 }
 
 class Coordinate

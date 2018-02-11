@@ -25,6 +25,7 @@ public class PrettySimpleShop extends JavaPlugin
     private static boolean debug;
     private ShopAPI shopAPI;
     private ConfigManager config;
+    private ShowoffItem showoffItem = null;
 
     public void onEnable()
     {
@@ -40,10 +41,16 @@ public class PrettySimpleShop extends JavaPlugin
         shopAPI = new ShopAPI(config.getString("shopName"), config.getString("price"), config.getString("sales"));
         ShopListener shopListener = new ShopListener(this, shopAPI, getEconomy(), config);
         if (config.getBoolean("showOffItems"))
-            new ShowoffItem(this, shopAPI);
+            showoffItem = new ShowoffItem(this, shopAPI);
         getCommand("shop").setExecutor(new HelpCommand());
         getCommand("setprice").setExecutor(new PriceCommand(shopListener));
         getCommand("buy").setExecutor(new BuyCommand(shopListener));
+    }
+
+    public void onDisable()
+    {
+        if (showoffItem != null)
+            showoffItem.despawnAll();
     }
 
     public static String getItemName(ItemStack item)
