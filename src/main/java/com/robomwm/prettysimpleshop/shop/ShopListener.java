@@ -93,7 +93,7 @@ public class ShopListener implements Listener
     private void onLeftClickChest(PlayerInteractEvent event)
     {
         Player player = event.getPlayer();
-        if (event.getAction() != Action.LEFT_CLICK_BLOCK || player.isSneaking())
+        if (event.getAction() != Action.LEFT_CLICK_BLOCK)
             return;
         if (!isEnabledWorld(event.getPlayer().getWorld()))
             return;

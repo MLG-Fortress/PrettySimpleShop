@@ -209,10 +209,12 @@ public class ShowoffItem implements Listener
             return false;
         Location location = shopAPI.getLocation(chest).add(0.5, 1.2, 0.5);
         ItemStack itemStack = shopAPI.getItemStack(chest);
+        despawnItem(location);
+        if (itemStack == null)
+            return false;
         String name = PrettySimpleShop.getItemName(itemStack); //TODO: make configurable
         itemStack.setAmount(1);
         itemStack.getItemMeta().setDisplayName(String.valueOf(ThreadLocalRandom.current().nextInt())); //Prevents merging (idea from SCS) though metadata might be sufficient?
-        despawnItem(location);
         Item item = location.getWorld().dropItem(location, itemStack);
         item.setPickupDelay(Integer.MAX_VALUE);
         item.setCustomName(name);
