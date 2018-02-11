@@ -32,7 +32,6 @@ public class ConfigManager
     private boolean debug;
     private ConfigurationSection messageSection;
     private ConfigurationSection tipSection;
-    private Map<String, String> tips = new HashMap<>();
     private Set<World> whitelistedWorlds = new HashSet<>();
 
     private Map<Player, String> lastSeenTip = new HashMap<>();
@@ -99,7 +98,7 @@ public class ConfigManager
         if (lastSeenTip.containsKey(player) && lastSeenTip.get(player).equals(key))
             return;
         lastSeenTip.put(player, key);
-        String message = formatter(tips.get(key));
+        String message = formatter(tipSection.getString(key));
         if (message.isEmpty())
             return;
         player.sendMessage(message);
