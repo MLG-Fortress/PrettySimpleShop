@@ -186,7 +186,7 @@ public class ShopListener implements Listener
         if (block.getType() != Material.CHEST)
             return;
         Chest chest = (Chest)block.getState();
-        if (!shopAPI.isShop(chest) || shopAPI.isDoubleChest(chest))
+        if (!shopAPI.isShop(chest))
             return;
         double deposit = shopAPI.getRevenue(chest, true);
         if (deposit <= 0)
