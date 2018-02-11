@@ -219,6 +219,7 @@ public class ShowoffItem implements Listener
         item.setCustomNameVisible(true);
         item.setVelocity(new Vector(0, 0.01, 0));
         item.setMetadata("NO_PICKUP", new FixedMetadataValue(instance, this));
+        spawnedItems.put(location, item);
         cacheChunk(location.getChunk());
         try
         {
