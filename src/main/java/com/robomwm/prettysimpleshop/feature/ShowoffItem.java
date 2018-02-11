@@ -3,14 +3,15 @@ package com.robomwm.prettysimpleshop.feature;
 import com.robomwm.prettysimpleshop.ConfigManager;
 import com.robomwm.prettysimpleshop.PrettySimpleShop;
 import com.robomwm.prettysimpleshop.event.ShopBoughtEvent;
+import com.robomwm.prettysimpleshop.event.ShopBreakEvent;
+import com.robomwm.prettysimpleshop.event.ShopOpenCloseEvent;
 import com.robomwm.prettysimpleshop.event.ShopPricedEvent;
+import com.robomwm.prettysimpleshop.event.ShopSelectEvent;
 import com.robomwm.prettysimpleshop.shop.ShopAPI;
-import com.robomwm.prettysimpleshop.shop.ShopInfo;
 import org.bukkit.Chunk;
 import org.bukkit.ChunkSnapshot;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Item;
@@ -18,7 +19,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPickupItemEvent;
-import org.bukkit.event.player.PlayerPickupItemEvent;
+import org.bukkit.event.entity.ItemDespawnEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.inventory.ItemStack;
@@ -179,6 +180,28 @@ public class ShowoffItem implements Listener
     {
         spawnItem((Chest)event.getShopInfo().getLocation().getBlock().getState());
     }
+    @EventHandler
+    private void onShopSelect(ShopSelectEvent event)
+    {
+        spawnItem((Chest)event.getShopInfo().getLocation().getBlock().getState());
+    }
+    @EventHandler
+    private void onShopOpen(ShopOpenCloseEvent event)
+    {
+        spawnItem((Chest)event.getShopInfo().getLocation().getBlock().getState());
+    }
+
+    @EventHandler
+    private void onShopBreak(ShopBreakEvent event)
+    {
+        despawnItem(event.getShopInfo().getLocation());
+    }
+    @EventHandler
+    private void onItemDespawn(ItemDespawnEvent event)
+    {
+        if (event.getEntity().hasMetadata("NO_PICKUP"))
+            event.setCancelled(true);
+    }
 
     private boolean spawnItem(Chest chest)
     {
@@ -186,7 +209,8 @@ public class ShowoffItem implements Listener
             return false;
         Location location = shopAPI.getLocation(chest).add(0.5, 1.2, 0.5);
         ItemStack itemStack = shopAPI.getItemStack(chest);
-        String name = PrettySimpleShop.getItemName(itemStack);
+        String name = PrettySimpleShop.getItemName(itemStack); //TODO: make configurable
+        itemStack.setAmount(1);
         itemStack.getItemMeta().setDisplayName(String.valueOf(ThreadLocalRandom.current().nextInt())); //Prevents merging (idea from SCS) though metadata might be sufficient?
         despawnItem(location);
         Item item = location.getWorld().dropItem(location, itemStack);

@@ -4,14 +4,14 @@ import com.robomwm.prettysimpleshop.ConfigManager;
 import com.robomwm.prettysimpleshop.PrettySimpleShop;
 import com.robomwm.prettysimpleshop.ReflectionHandler;
 import com.robomwm.prettysimpleshop.event.ShopBoughtEvent;
+import com.robomwm.prettysimpleshop.event.ShopBreakEvent;
+import com.robomwm.prettysimpleshop.event.ShopOpenCloseEvent;
 import com.robomwm.prettysimpleshop.event.ShopPricedEvent;
-import com.robomwm.prettysimpleshop.event.ShopViewEvent;
+import com.robomwm.prettysimpleshop.event.ShopSelectEvent;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.milkbowl.vault.economy.Economy;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -24,6 +24,9 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockExplodeEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -32,8 +35,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Created on 2/8/2018.
@@ -121,9 +124,9 @@ public class ShopListener implements Listener
         selectedShop.put(player, shopInfo);
 
         //TODO: fire event for custom plugins (e.g. anvil GUI, if we can manage to stick itemstack in it)
-        ShopViewEvent shopViewEvent = new ShopViewEvent(player, shopInfo);
-        instance.getServer().getPluginManager().callEvent(shopViewEvent);
-        if (shopViewEvent.isCancelled())
+        ShopSelectEvent shopSelectEvent = new ShopSelectEvent(player, shopInfo);
+        instance.getServer().getPluginManager().callEvent(shopSelectEvent);
+        if (shopSelectEvent.isCancelled())
             return;
 
         String textToSend = config.getString("saleInfo", PrettySimpleShop.getItemName(item), economy.format(price), Integer.toString(item.getAmount()));
@@ -164,14 +167,18 @@ public class ShopListener implements Listener
             return;
         Player player = (Player)event.getPlayer();
         Chest chest = shopAPI.getChest(event.getInventory().getLocation());
+        if (!shopAPI.isShop(chest))
+            return;
 
-        if (priceSetter.containsKey(player) && shopAPI.isShop(chest))
+        if (priceSetter.containsKey(player))
         {
             double newPrice = priceSetter.remove(player);
             shopAPI.setPrice(chest, newPrice);
             config.sendMessage(player, "priceApplied", economy.format(newPrice));
             instance.getServer().getPluginManager().callEvent(new ShopPricedEvent(player, chest.getLocation(), newPrice));
         }
+
+        instance.getServer().getPluginManager().callEvent(new ShopOpenCloseEvent(player, new ShopInfo(shopAPI.getLocation(chest), shopAPI.getItemStack(chest), shopAPI.getPrice(chest)), true));
 
         double deposit = shopAPI.getRevenue(chest, true);
         if (deposit <= 0)
@@ -188,12 +195,58 @@ public class ShopListener implements Listener
         Chest chest = (Chest)block.getState();
         if (!shopAPI.isShop(chest))
             return;
+        instance.getServer().getPluginManager().callEvent(new ShopBreakEvent(event.getPlayer(), new ShopInfo(shopAPI.getLocation(chest), shopAPI.getItemStack(chest), shopAPI.getPrice(chest))));
         double deposit = shopAPI.getRevenue(chest, true);
         if (deposit <= 0)
             return;
         Player player = event.getPlayer();
         economy.depositPlayer(player, deposit);
         config.sendMessage(player, "collectRevenue", economy.format(deposit));
+    }
+
+    //Purely for calling the dumb event
+    @EventHandler(ignoreCancelled = true)
+    private void onClose(InventoryCloseEvent event)
+    {
+        if (event.getPlayer().getType() != EntityType.PLAYER)
+            return;
+        if (event.getInventory().getLocation() == null)
+            return;
+        if (!(event.getInventory().getHolder() instanceof Chest || event.getInventory().getHolder() instanceof DoubleChest))
+            return;
+        Player player = (Player)event.getPlayer();
+        Chest chest = shopAPI.getChest(event.getInventory().getLocation());
+        if (!shopAPI.isShop(chest))
+            return;
+        instance.getServer().getPluginManager().callEvent(new ShopOpenCloseEvent(player, new ShopInfo(shopAPI.getLocation(chest), shopAPI.getItemStack(chest), shopAPI.getPrice(chest)), false));
+    }
+
+    //For now we'll just prevent explosions. Might consider dropping stored revenue on explosion later.
+    @EventHandler(ignoreCancelled = true)
+    private void onExplode(EntityExplodeEvent event)
+    {
+        Iterator<Block> blockIterator = event.blockList().iterator();
+        while (blockIterator.hasNext())
+        {
+            Block block = blockIterator.next();
+            if (block.getType() != Material.CHEST)
+                continue;
+            if (shopAPI.isShop((Chest)block.getState()))
+                blockIterator.remove();
+        }
+    }
+    @EventHandler(ignoreCancelled = true)
+    private void onExplode(BlockExplodeEvent event)
+    {
+        Iterator<Block> blockIterator = event.blockList().iterator();
+        while (blockIterator.hasNext())
+        {
+            Block block = blockIterator.next();
+            if (block.getType() != Material.CHEST)
+                continue;
+            if (shopAPI.isShop((Chest)block.getState()))
+                blockIterator.remove();
+        }
     }
 
     //Commands cuz well all the data's here so yea
