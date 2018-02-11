@@ -3,6 +3,7 @@ package com.robomwm.prettysimpleshop;
 import com.robomwm.prettysimpleshop.command.BuyCommand;
 import com.robomwm.prettysimpleshop.command.HelpCommand;
 import com.robomwm.prettysimpleshop.command.PriceCommand;
+import com.robomwm.prettysimpleshop.feature.ShowoffItem;
 import com.robomwm.prettysimpleshop.shop.ShopAPI;
 import com.robomwm.prettysimpleshop.shop.ShopListener;
 import net.milkbowl.vault.economy.Economy;
@@ -38,6 +39,8 @@ public class PrettySimpleShop extends JavaPlugin
         debug = config.isDebug();
         shopAPI = new ShopAPI(config.getString("shopName"), config.getString("price"), config.getString("sales"));
         ShopListener shopListener = new ShopListener(this, shopAPI, getEconomy(), config);
+        if (config.getBoolean("showOffItems"))
+            new ShowoffItem(this, shopAPI);
         getCommand("shop").setExecutor(new HelpCommand());
         getCommand("setprice").setExecutor(new PriceCommand(shopListener));
         getCommand("buy").setExecutor(new BuyCommand(shopListener));

@@ -40,6 +40,7 @@ public class ConfigManager
     {
         instance = plugin;
         config = instance.getConfig();
+        config.addDefault("showOffItems", true);
         config.addDefault("useWorldWhitelist", false);
         List<String> whitelist = new ArrayList<>();
         whitelist.add("mall");
@@ -86,6 +87,11 @@ public class ConfigManager
         }
 
         instance.saveConfig();
+    }
+
+    public boolean getBoolean(String key)
+    {
+        return config.getBoolean(key);
     }
 
     public boolean isDebug()
