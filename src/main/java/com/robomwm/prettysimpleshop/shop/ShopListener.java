@@ -131,6 +131,7 @@ public class ShopListener implements Listener
 
         String textToSend = config.getString("saleInfo", PrettySimpleShop.getItemName(item), economy.format(price), Integer.toString(item.getAmount()));
         String json;
+        item.setAmount(1);
         try
         {
             Object nmsItemStack = asNMSCopy.invoke(null, item); //CraftItemStack#asNMSCopy(itemStack); //nms version of the ItemStack
