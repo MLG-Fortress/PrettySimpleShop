@@ -56,7 +56,7 @@ public class PrettySimpleShop extends JavaPlugin
     public static String getItemName(ItemStack item)
     {
         if (item.hasItemMeta() && ((ItemMeta)item).hasDisplayName())
-            return ((ItemMeta)item).getDisplayName();
+            return item.getItemMeta().getDisplayName();
         try
         {
             return item.getI18NDisplayName();
