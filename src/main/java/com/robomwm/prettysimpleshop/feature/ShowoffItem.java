@@ -95,7 +95,7 @@ public class ShowoffItem implements Listener
         if (!config.isWhitelistedWorld(event.getWorld()))
             return;
         final Chunk chunk = event.getChunk();
-        if (event.isNewChunk() || !cache.getStringList("chunks").contains(getChunkName(chunk)))
+        if (event.isNewChunk() || !cache.contains(getChunkName(chunk)))
             return;
         final ChunkSnapshot chunkSnapshot = event.getChunk().getChunkSnapshot();
         //This nesting is crazy lol I haven't nested like this in years
@@ -240,15 +240,15 @@ public class ShowoffItem implements Listener
 
     private void cacheChunk(Chunk chunk)
     {
-        if (cache.getStringList("chunks").contains(getChunkName(chunk)))
+        if (cache.contains(getChunkName(chunk)))
             return;
-        cache.getStringList("chunks").add(getChunkName(chunk));
+        cache.set(getChunkName(chunk), true);
         saveCache();
     }
 
     private void removeCachedChunk(Chunk chunk)
     {
-        cache.getStringList("chunks").remove(getChunkName(chunk));
+        cache.set(getChunkName(chunk), null);
         saveCache();
     }
 
