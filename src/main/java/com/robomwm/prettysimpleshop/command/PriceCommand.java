@@ -22,8 +22,13 @@ public class PriceCommand implements CommandExecutor
 
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args)
     {
-        if (!(sender instanceof Player) || args.length < 1)
+        if (!(sender instanceof Player))
             return false;
+        if (args.length < 1)
+        {
+            shopListener.priceCommand((Player)sender, null);
+            return false;
+        }
 
         double price;
 
@@ -33,6 +38,7 @@ public class PriceCommand implements CommandExecutor
         }
         catch (Throwable rock)
         {
+            shopListener.priceCommand((Player)sender, null);
             return false;
         }
 

@@ -28,6 +28,7 @@ import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
@@ -156,6 +157,13 @@ public class ShopListener implements Listener
         config.sendTip(player, "saleInfo");
     }
 
+    //Clear shop selection on world change
+    @EventHandler
+    private void onWorldChange(PlayerChangedWorldEvent event)
+    {
+        selectedShop.remove(event.getPlayer());
+    }
+
     //Collect revenues
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     private void onOpenInventory(InventoryOpenEvent event)
@@ -169,7 +177,11 @@ public class ShopListener implements Listener
         Player player = (Player)event.getPlayer();
         Chest chest = shopAPI.getChest(event.getInventory().getLocation());
         if (!shopAPI.isShop(chest))
+        {
+            if (priceSetter.remove(player) != null)
+                config.sendMessage(player, "setPriceCanceled");
             return;
+        }
 
         if (priceSetter.containsKey(player))
         {
@@ -304,9 +316,13 @@ public class ShopListener implements Listener
         }
         return true;
     }
-    public void priceCommand(Player player, double price)
+    public void priceCommand(Player player, Double price)
     {
-
+        if (price == null)
+        {
+            priceSetter.remove(player);
+            return;
+        }
         selectedShop.remove(player);
         priceSetter.put(player, price);
         config.sendMessage(player, "applyPrice");
