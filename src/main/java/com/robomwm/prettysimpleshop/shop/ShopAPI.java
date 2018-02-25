@@ -80,7 +80,7 @@ public class ShopAPI
         if (theName == null || theName.isEmpty())
             return false;
         String[] name = theName.split(" ");
-        if (name.length == 1 && name[0].equals(shopKey) && includeNew) //new shop
+        if (name.length == 1 && name[0].equalsIgnoreCase(shopKey) && includeNew) //new shop
             return true;
         return name.length == 5 && name[4].startsWith("\u00A7\u00A7");
     }
@@ -93,7 +93,7 @@ public class ShopAPI
             return false;
         String[] name = theName.split(" ");
         PrettySimpleShop.debug("setPrice:" + name.length);
-        if (name.length == 1 && name[0].equals(shopKey))
+        if (name.length == 1 && name[0].equalsIgnoreCase(shopKey))
             return setName(chest, priceKey + " " + Double.toString(newPrice) + " " + salesKey + " 0 \u00A7\u00A7");
         else if (!name[0].equals(priceKey))
             return false;
