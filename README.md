@@ -19,6 +19,7 @@ Revenues from sales are transferred to the player when they open the chest.
 - /buy - Buys items from the selected shop
 
 ## Features
+- Supports DoubleChests! (Wasn't a simple task.)
 - Supports custom items. Displays custom item name and lore.
 - Uses Minecraft item names if you're using [Paper](https://emc.gs/paper)
 - Supports all region protection plugins! No need to "allow use" or anything silly like that just to allow players to buy.
