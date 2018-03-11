@@ -42,7 +42,7 @@ public class PrettySimpleShop extends JavaPlugin
         ShopListener shopListener = new ShopListener(this, shopAPI, getEconomy(), config);
         if (config.getBoolean("showOffItems"))
             showoffItem = new ShowoffItem(this, shopAPI);
-        getCommand("shop").setExecutor(new HelpCommand());
+        getCommand("shop").setExecutor(new HelpCommand(this));
         getCommand("setprice").setExecutor(new PriceCommand(shopListener));
         getCommand("buy").setExecutor(new BuyCommand(shopListener));
     }
