@@ -59,7 +59,7 @@ public class BuyCommand implements CommandExecutor, Listener
 
         if (args.length == 4) //Selecting a shop via clicking
         {
-            World world = player.getServer().getWorld(args[1]);
+            World world = player.getServer().getWorld(args[0]);
             if (world == null || player.getWorld() != world)
             {
                 config.sendMessage(player, "tooFar");
@@ -69,7 +69,7 @@ public class BuyCommand implements CommandExecutor, Listener
 
             try
             {
-                location = new Location(world, Double.parseDouble(args[2]), Double.parseDouble(args[3]), Double.parseDouble(args[4]));
+                location = new Location(world, Double.parseDouble(args[1]), Double.parseDouble(args[2]), Double.parseDouble(args[3]));
             }
             catch (Throwable rock)
             {
