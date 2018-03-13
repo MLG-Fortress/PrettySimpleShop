@@ -1,6 +1,7 @@
 package com.robomwm.prettysimpleshop.shop;
 
 import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
 
@@ -16,7 +17,7 @@ public class ShopInfo
     private Location location;
     private ItemStack item;
     private double price;
-    private BaseComponent hoverableText;
+    private TextComponent hoverableText;
 
     public ShopInfo(Location location, ItemStack item, double price)
     {
@@ -25,7 +26,7 @@ public class ShopInfo
         this.price = price;
     }
 
-    public void setHoverableText(BaseComponent hoverableText)
+    public void setHoverableText(TextComponent hoverableText)
     {
         this.hoverableText = hoverableText;
     }

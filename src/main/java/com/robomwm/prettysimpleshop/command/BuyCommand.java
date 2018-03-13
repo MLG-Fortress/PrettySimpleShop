@@ -79,7 +79,8 @@ public class BuyCommand implements CommandExecutor, Listener
             if (!shopListener.selectShop(player, location.getBlock()))
                 config.sendMessage(player, "noShopThere");
             else
-                player.sendMessage(LazyUtil.getClickableSuggestion(config.getString("promptBuy"), "/" + label + " ", label));
+                player.sendMessage(LazyUtil.getClickableSuggestion(config.getString("promptBuy"),
+                        "/" + label + " ", "/" + label));
             return true;
         }
 
@@ -217,9 +218,9 @@ class UnconfirmedTransaction
         bookMeta.spigot().addPage(LazyUtil.buildPage(config.getString("BuyingQuantity", Integer.toString(amount)),
                 "\n", shopInfo.getHoverableText(),
                 "\n", config.getString("TotalCost", economy.format(amount * shopInfo.getPrice())),
-                "\n", config.getString("currentBalanceAndCost", economy.format(economy.getBalance(player)), economy.format(amount * shopInfo.getPrice() - economy.getBalance(player))),
+                "\n", config.getString("currentBalanceAndCost", economy.format(economy.getBalance(player)), economy.format( - economy.getBalance(player) - amount * shopInfo.getPrice())),
                 "\n", LazyUtil.getClickableCommand(config.getString("Confirm"), "/buy " + amount),
-                " ", LazyUtil.getClickableCommand("Cancel", "/buy cancel")));
+                " ", LazyUtil.getClickableCommand(config.getString("Cancel"), "/buy cancel")));
 
         book.setItemMeta(bookMeta);
         bookUtil.openBook(player, book);

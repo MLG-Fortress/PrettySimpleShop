@@ -131,7 +131,7 @@ public class ShopListener implements Listener
         try
         {
             if (shopInfo.equals(selectedShop.get(player)))
-                player.sendMessage(LazyUtil.getClickableSuggestion(config.getString("promptBuy"), "/buy ", "/buy"));
+                player.sendMessage(LazyUtil.getClickableSuggestion(config.getString("promptBuy"), "/buy ", "/buy "));
         }
         catch (Throwable ignored) {}
 
@@ -170,6 +170,7 @@ public class ShopListener implements Listener
                 chest.getLocation().getWorld().getName() + " " + chest.getLocation().getX() + " " +
                 chest.getLocation().getBlockY() + " " + chest.getLocation().getBlockZ()));
         player.sendMessage(text);
+        text.setText(PrettySimpleShop.getItemName(item));
         shopInfo.setHoverableText(text);
         config.sendTip(player, "saleInfo");
         return true;
