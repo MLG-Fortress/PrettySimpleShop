@@ -44,7 +44,7 @@ public class PrettySimpleShop extends JavaPlugin
             showoffItem = new ShowoffItem(this, shopAPI);
         getCommand("shop").setExecutor(new HelpCommand(this));
         getCommand("setprice").setExecutor(new PriceCommand(shopListener));
-        getCommand("buy").setExecutor(new BuyCommand(shopListener));
+        getCommand("buy").setExecutor(new BuyCommand(this, shopListener, economy));
     }
 
     public void onDisable()
