@@ -12,6 +12,7 @@ import org.bukkit.Chunk;
 import org.bukkit.ChunkSnapshot;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Chest;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Item;
@@ -75,6 +76,9 @@ public class ShowoffItem implements Listener
         }
         else
             cache = YamlConfiguration.loadConfiguration(cacheFile);
+        for (World world : plugin.getServer().getWorlds())
+            for (Chunk chunk : world.getLoadedChunks())
+                loadShopItemsInChunk(chunk);
     }
 
     private void saveCache()
@@ -97,8 +101,12 @@ public class ShowoffItem implements Listener
         final Chunk chunk = event.getChunk();
         if (event.isNewChunk() || !cache.contains(getChunkName(chunk)))
             return;
-        final ChunkSnapshot chunkSnapshot = event.getChunk().getChunkSnapshot();
-        //This nesting is crazy lol I haven't nested like this in years
+        loadShopItemsInChunk(chunk);
+    }
+
+    private void loadShopItemsInChunk(Chunk chunk)
+    {
+        final ChunkSnapshot chunkSnapshot = chunk.getChunkSnapshot();
         new BukkitRunnable()
         {
             @Override
