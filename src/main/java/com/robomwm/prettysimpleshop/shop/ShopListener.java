@@ -1,6 +1,7 @@
 package com.robomwm.prettysimpleshop.shop;
 
 import com.robomwm.prettysimpleshop.ConfigManager;
+import com.robomwm.prettysimpleshop.LazyUtil;
 import com.robomwm.prettysimpleshop.PrettySimpleShop;
 import com.robomwm.prettysimpleshop.ReflectionHandler;
 import com.robomwm.prettysimpleshop.event.ShopBreakEvent;
@@ -127,6 +128,13 @@ public class ShopListener implements Listener
         }
 
         ShopInfo shopInfo = new ShopInfo(chest.getLocation(), item, price);
+        try
+        {
+            if (shopInfo.equals(selectedShop.get(player)))
+                player.sendMessage(LazyUtil.getClickableSuggestion(config.getString("promptBuy"), "/buy ", "/buy"));
+        }
+        catch (Throwable ignored) {}
+
         selectedShop.put(player, shopInfo);
 
         //TODO: fire event for custom plugins (e.g. anvil GUI, if we can manage to stick itemstack in it)

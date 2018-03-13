@@ -68,7 +68,7 @@ public class ConfigManager
         messageSection.addDefault("collectRevenue", "Collected {0} in sales from this shop");
         messageSection.addDefault("tooFar", "&cYou're too far away from this shop");
         messageSection.addDefault("noShopThere", "&cThis shop has been moved or destroyed");
-        messageSection.addDefault("promptBuy", "&fHow much would you like to &6/buy <quantity>");
+        messageSection.addDefault("promptBuy", "&eHow much would you like to &6/buy <quantity>");
 
         tipSection = config.getConfigurationSection("tips");
         if (tipSection == null)
