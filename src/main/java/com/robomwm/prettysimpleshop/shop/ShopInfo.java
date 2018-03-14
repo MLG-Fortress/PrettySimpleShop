@@ -54,6 +54,8 @@ public class ShopInfo
     @Override
     public boolean equals(Object other)
     {
+        if (other == null)
+            return false;
         if (super.equals(other))
             return true;
         ShopInfo otherShopInfo = (ShopInfo)other;
