@@ -8,7 +8,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -39,15 +41,26 @@ public class BuyConversation implements Listener
     @EventHandler(ignoreCancelled = true)
     private void onShopSelectWithIntent(ShopSelectEvent event)
     {
+        Player player = event.getPlayer();
+        buyPrompt.remove(player);
         if (!event.hasIntentToBuy())
             return;
-        Player player = event.getPlayer();
         configManager.sendMessage(player, "buyPrompt", event.getShopInfo().getItemName());
         buyPrompt.add(player);
     }
 
     @EventHandler(ignoreCancelled = true)
     private void onCommand(PlayerCommandPreprocessEvent event)
+    {
+        buyPrompt.remove(event.getPlayer());
+    }
+    @EventHandler
+    private void onQuit(PlayerQuitEvent event)
+    {
+        buyPrompt.remove(event.getPlayer());
+    }
+    @EventHandler
+    private void onChangeWorlds(PlayerChangedWorldEvent event)
     {
         buyPrompt.remove(event.getPlayer());
     }
