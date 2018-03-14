@@ -213,6 +213,7 @@ class UnconfirmedTransaction
     {
         this.shopInfo = shopInfo;
         this.amount = amount;
+        shopInfo.getHoverableText().setText(PrettySimpleShop.getItemName(shopInfo.getItem()));
         ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
         BookMeta bookMeta = (BookMeta)book.getItemMeta();
         bookMeta.spigot().addPage(LazyUtil.buildPage(config.getString("BuyingQuantity", Integer.toString(amount)),

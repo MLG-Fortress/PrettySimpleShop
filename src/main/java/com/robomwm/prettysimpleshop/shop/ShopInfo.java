@@ -31,7 +31,7 @@ public class ShopInfo
         this.hoverableText = hoverableText;
     }
 
-    public BaseComponent getHoverableText()
+    public TextComponent getHoverableText()
     {
         return hoverableText;
     }

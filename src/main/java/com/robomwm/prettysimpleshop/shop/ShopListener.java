@@ -170,7 +170,6 @@ public class ShopListener implements Listener
                 chest.getLocation().getWorld().getName() + " " + chest.getLocation().getX() + " " +
                 chest.getLocation().getBlockY() + " " + chest.getLocation().getBlockZ()));
         player.sendMessage(text);
-        text.setText(PrettySimpleShop.getItemName(item));
         shopInfo.setHoverableText(text);
         config.sendTip(player, "saleInfo");
         return true;
