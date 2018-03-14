@@ -217,10 +217,10 @@ class UnconfirmedTransaction
         ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
         BookMeta bookMeta = (BookMeta)book.getItemMeta();
         bookMeta.spigot().addPage(LazyUtil.buildPage(config.getString("BuyingQuantity", Integer.toString(amount)),
-                "\n", shopInfo.getHoverableText(),
-                "\n", config.getString("TotalCost", economy.format(amount * shopInfo.getPrice())),
-                "\n", config.getString("currentBalanceAndCost", economy.format(economy.getBalance(player)), economy.format( - economy.getBalance(player) - amount * shopInfo.getPrice())),
-                "\n", LazyUtil.getClickableCommand(config.getString("Confirm"), "/buy " + amount),
+                "\n\n", shopInfo.getHoverableText(),
+                "\n\n", config.getString("TotalCost", economy.format(amount * shopInfo.getPrice())),
+                "\n", config.getString("currentBalanceAndCost", economy.format(economy.getBalance(player)), economy.format( economy.getBalance(player) - amount * shopInfo.getPrice())),
+                "\n\n", LazyUtil.getClickableCommand(config.getString("Confirm"), "/buy " + amount),
                 " ", LazyUtil.getClickableCommand(config.getString("Cancel"), "/buy cancel")));
 
         book.setItemMeta(bookMeta);
