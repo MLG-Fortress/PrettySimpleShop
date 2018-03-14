@@ -62,6 +62,7 @@ public class ConfigManager
         messageSection.addDefault("shopModified", "&cTransaction canceled: Shop was modified. Please try again.");
         messageSection.addDefault("transactionCanceled", "&cTransaction canceled.");
         messageSection.addDefault("transactionCompleted", "Transaction completed. Bought {0} {1} for {2}");
+        messageSection.addDefault("transactionCompleted", "Bought {0} {1} for {2}");
         messageSection.addDefault("applyPrice", "&bOpen the shop to apply your shiny new price.");
         messageSection.addDefault("setPriceCanceled", "&c/setprice canceled: opened chest is not a shop. To make this chest a shop, rename it in an anvil with the name: shop");
         messageSection.addDefault("priceApplied", "Price updated to {0}");

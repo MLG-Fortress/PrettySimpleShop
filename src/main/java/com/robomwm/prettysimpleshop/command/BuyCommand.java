@@ -156,7 +156,7 @@ public class BuyCommand implements CommandExecutor, Listener
         ShopInventoryHolder shopInventoryHolder = new ShopInventoryHolder();
         Inventory inventory = player.getServer().createInventory(shopInventoryHolder,
                 rows * 9,
-                config.getString("transactionCompleted", Integer.toString(itemStack.getAmount()), "", economy.format(itemStack.getAmount() * shopInfo.getPrice())));
+                config.getString("transactionCompletedWindow", Integer.toString(itemStack.getAmount()), PrettySimpleShop.getItemName(itemStack), economy.format(itemStack.getAmount() * shopInfo.getPrice())));
         inventory.addItem(itemStack);
         shopInventoryHolder.setInventory(inventory);
         player.openInventory(inventory);
