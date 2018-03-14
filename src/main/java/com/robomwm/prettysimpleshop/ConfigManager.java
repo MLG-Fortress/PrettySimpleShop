@@ -43,7 +43,6 @@ public class ConfigManager
         config.addDefault("showOffItems", true);
         config.addDefault("useWorldWhitelist", false);
         config.addDefault("confirmTransactions", true);
-        config.addDefault("useAnvilGUI", true);
         List<String> whitelist = new ArrayList<>();
         whitelist.add("mall");
         config.addDefault("worldWhitelist", whitelist);

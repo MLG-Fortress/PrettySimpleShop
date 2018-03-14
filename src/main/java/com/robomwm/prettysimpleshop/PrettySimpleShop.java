@@ -3,7 +3,6 @@ package com.robomwm.prettysimpleshop;
 import com.robomwm.prettysimpleshop.command.BuyCommand;
 import com.robomwm.prettysimpleshop.command.HelpCommand;
 import com.robomwm.prettysimpleshop.command.PriceCommand;
-import com.robomwm.prettysimpleshop.feature.AnvilBuyGUI;
 import com.robomwm.prettysimpleshop.feature.ShowoffItem;
 import com.robomwm.prettysimpleshop.shop.ShopAPI;
 import com.robomwm.prettysimpleshop.shop.ShopListener;
@@ -46,8 +45,6 @@ public class PrettySimpleShop extends JavaPlugin
         getCommand("shop").setExecutor(new HelpCommand(this));
         getCommand("setprice").setExecutor(new PriceCommand(shopListener));
         getCommand("buy").setExecutor(new BuyCommand(this, shopListener, economy));
-        if (config.getBoolean("useAnvilGUI"))
-            new AnvilBuyGUI(this);
     }
 
     public void onDisable()
