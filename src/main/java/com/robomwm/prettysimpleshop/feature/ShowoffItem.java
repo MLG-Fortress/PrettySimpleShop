@@ -99,13 +99,15 @@ public class ShowoffItem implements Listener
         if (!config.isWhitelistedWorld(event.getWorld()))
             return;
         final Chunk chunk = event.getChunk();
-        if (event.isNewChunk() || !cache.contains(getChunkName(chunk)))
+        if (event.isNewChunk())
             return;
         loadShopItemsInChunk(chunk);
     }
 
     private void loadShopItemsInChunk(Chunk chunk)
     {
+        if (!cache.contains(getChunkName(chunk)))
+            return;
         final ChunkSnapshot chunkSnapshot = chunk.getChunkSnapshot();
         new BukkitRunnable()
         {
