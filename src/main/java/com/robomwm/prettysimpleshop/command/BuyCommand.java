@@ -76,11 +76,8 @@ public class BuyCommand implements CommandExecutor, Listener
                 return false;
             }
 
-            if (!shopListener.selectShop(player, location.getBlock()))
+            if (!shopListener.selectShop(player, location.getBlock(), true))
                 config.sendMessage(player, "noShopThere");
-            else
-                player.sendMessage(LazyUtil.getClickableSuggestion(config.getString("promptBuy"),
-                        "/" + label + " ", "/" + label));
             return true;
         }
 

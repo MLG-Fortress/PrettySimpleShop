@@ -102,10 +102,10 @@ public class ShopListener implements Listener
 
         Block block = event.getClickedBlock();
 
-        selectShop(player, block);
+        selectShop(player, block, false);
     }
 
-    public boolean selectShop(Player player, Block block)
+    public boolean selectShop(Player player, Block block, boolean wantToBuy)
     {
         if (block.getType() != Material.CHEST)
             return false;
@@ -128,20 +128,13 @@ public class ShopListener implements Listener
         }
 
         ShopInfo shopInfo = new ShopInfo(chest.getLocation(), item, price);
-        try
-        {
-            if (shopInfo.equals(selectedShop.get(player)))
-                player.sendMessage(LazyUtil.getClickableSuggestion(config.getString("promptBuy"), "/buy ", "/buy "));
-        }
-        catch (Throwable ignored) {}
 
-        selectedShop.put(player, shopInfo);
-
-        //TODO: fire event for custom plugins (e.g. anvil GUI, if we can manage to stick itemstack in it)
-        ShopSelectEvent shopSelectEvent = new ShopSelectEvent(player, shopInfo);
+        ShopSelectEvent shopSelectEvent = new ShopSelectEvent(player, shopInfo, shopInfo.equals(selectedShop.get(player)) || wantToBuy);
         instance.getServer().getPluginManager().callEvent(shopSelectEvent);
         if (shopSelectEvent.isCancelled())
             return false;
+
+        selectedShop.put(player, shopInfo);
 
         String textToSend = config.getString("saleInfo", PrettySimpleShop.getItemName(item), economy.format(price), Integer.toString(item.getAmount()));
         String json;

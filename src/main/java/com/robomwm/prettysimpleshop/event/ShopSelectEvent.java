@@ -25,12 +25,22 @@ public class ShopSelectEvent extends Event implements Cancellable
 
     private Player player;
     private ShopInfo shopInfo;
+    private boolean intentToBuy;
     private boolean cancelled;
 
-    public ShopSelectEvent(Player player, ShopInfo shopInfo)
+    public ShopSelectEvent(Player player, ShopInfo shopInfo, boolean intentToBuy)
     {
         this.player = player;
         this.shopInfo = shopInfo;
+        this.intentToBuy = intentToBuy;
+    }
+
+    /**
+     * @return whether the player's selection indicates an interest to buy
+     */
+    public boolean hasIntentToBuy()
+    {
+        return intentToBuy;
     }
 
     public Player getPlayer()
