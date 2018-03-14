@@ -43,6 +43,7 @@ public class ConfigManager
         config.addDefault("showOffItems", true);
         config.addDefault("useWorldWhitelist", false);
         config.addDefault("confirmTransactions", true);
+        config.addDefault("useConversations", true);
         List<String> whitelist = new ArrayList<>();
         whitelist.add("mall");
         config.addDefault("worldWhitelist", whitelist);
@@ -78,7 +79,7 @@ public class ConfigManager
         tipSection = config.getConfigurationSection("tips");
         if (tipSection == null)
             tipSection = config.createSection("tips");
-        tipSection.addDefault("saleInfo", "Hover for item details. Click the text to /buy");
+        tipSection.addDefault("saleInfo", "Hover for item details. Click to /buy");
         tipSection.addDefault("noStock", "If you are the owner, take note that shops must only contain the same item in its inventory.");
 
         config.options().copyDefaults(true);

@@ -128,15 +128,10 @@ public class ShopListener implements Listener
         }
 
         ShopInfo shopInfo = new ShopInfo(chest.getLocation(), item, price);
-        ShopInfo oldShop = selectedShop.put(player, shopInfo);
 
-        ShopSelectEvent shopSelectEvent = new ShopSelectEvent(player, shopInfo, shopInfo.equals(oldShop) || wantToBuy);
-        instance.getServer().getPluginManager().callEvent(shopSelectEvent);
-        if (shopSelectEvent.isCancelled())
-        {
-            selectedShop.put(player, oldShop);
-            return false;
-        }
+        ShopSelectEvent shopSelectEvent = new ShopSelectEvent(player, shopInfo, shopInfo.equals(selectedShop.get(player)) || wantToBuy);
+
+        selectedShop.put(player, shopInfo);
 
         String textToSend = config.getString("saleInfo", PrettySimpleShop.getItemName(item), economy.format(price), Integer.toString(item.getAmount()));
         String json;
@@ -151,6 +146,7 @@ public class ShopListener implements Listener
         catch (Throwable rock)
         {
             player.sendMessage(textToSend);
+            instance.getServer().getPluginManager().callEvent(shopSelectEvent);
             return true;
         }
 
@@ -167,6 +163,7 @@ public class ShopListener implements Listener
         player.sendMessage(text);
         shopInfo.setHoverableText(text);
         config.sendTip(player, "saleInfo");
+        instance.getServer().getPluginManager().callEvent(shopSelectEvent);
         return true;
     }
 
