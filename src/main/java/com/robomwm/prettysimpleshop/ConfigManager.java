@@ -67,7 +67,6 @@ public class ConfigManager
         messageSection.addDefault("tooFar", "&cYou're too far away from this shop");
         messageSection.addDefault("noShopThere", "&cThis shop has been moved or destroyed");
         messageSection.addDefault("buyPrompt", "&dPrettySimpleShop: &rHow many {0} &rwould you like to buy?");
-        messageSection.addDefault("BuyingQuantity", "Buying {0}");
         messageSection.addDefault("TotalCost", "for a total cost of {0}");
         messageSection.addDefault("currentBalanceAndCost", "You have {0} and will have {1} after confirming.");
         messageSection.addDefault("Confirm", "&2[Confirm]");
