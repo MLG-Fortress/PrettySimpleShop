@@ -128,13 +128,15 @@ public class ShopListener implements Listener
         }
 
         ShopInfo shopInfo = new ShopInfo(chest.getLocation(), item, price);
+        ShopInfo oldShop = selectedShop.put(player, shopInfo);
 
-        ShopSelectEvent shopSelectEvent = new ShopSelectEvent(player, shopInfo, shopInfo.equals(selectedShop.get(player)) || wantToBuy);
+        ShopSelectEvent shopSelectEvent = new ShopSelectEvent(player, shopInfo, shopInfo.equals(oldShop) || wantToBuy);
         instance.getServer().getPluginManager().callEvent(shopSelectEvent);
         if (shopSelectEvent.isCancelled())
+        {
+            selectedShop.put(player, oldShop);
             return false;
-
-        selectedShop.put(player, shopInfo);
+        }
 
         String textToSend = config.getString("saleInfo", PrettySimpleShop.getItemName(item), economy.format(price), Integer.toString(item.getAmount()));
         String json;
