@@ -6,19 +6,14 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import javax.annotation.Nonnull;
-import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created on 2/16/2017.
@@ -63,6 +58,7 @@ public class ConfigManager
         messageSection.addDefault("shopModified", "&cTransaction canceled: Shop was modified. Please try again.");
         messageSection.addDefault("transactionCanceled", "&cTransaction canceled.");
         messageSection.addDefault("transactionCompleted", "Transaction completed. Bought {0} {1} for {2}");
+        messageSection.addDefault("transactionCompletedWindow", "Bought {0} {1} for {2}");
         messageSection.addDefault("transactionCompleted", "Bought {0} {1} for {2}");
         messageSection.addDefault("applyPrice", "&bOpen the shop to apply your shiny new price.");
         messageSection.addDefault("setPriceCanceled", "&c/setprice canceled: opened chest is not a shop. To make this chest a shop, rename it in an anvil with the name: shop");
