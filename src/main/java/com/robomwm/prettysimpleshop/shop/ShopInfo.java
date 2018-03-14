@@ -1,6 +1,6 @@
 package com.robomwm.prettysimpleshop.shop;
 
-import net.md_5.bungee.api.chat.BaseComponent;
+import com.robomwm.prettysimpleshop.PrettySimpleShop;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
@@ -28,7 +28,8 @@ public class ShopInfo
 
     public void setHoverableText(TextComponent hoverableText)
     {
-        this.hoverableText = hoverableText;
+        this.hoverableText = new TextComponent(hoverableText);
+        this.hoverableText.setText(getItemName());
     }
 
     public TextComponent getHoverableText()
@@ -49,6 +50,11 @@ public class ShopInfo
     public ItemStack getItem()
     {
         return item;
+    }
+
+    public String getItemName()
+    {
+        return PrettySimpleShop.getItemName(item);
     }
 
     @Override

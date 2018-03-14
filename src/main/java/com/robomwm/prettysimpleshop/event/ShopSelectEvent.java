@@ -2,7 +2,6 @@ package com.robomwm.prettysimpleshop.event;
 
 import com.robomwm.prettysimpleshop.shop.ShopInfo;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
@@ -26,7 +25,6 @@ public class ShopSelectEvent extends Event
     private Player player;
     private ShopInfo shopInfo;
     private boolean intentToBuy;
-    private boolean cancelled;
 
     public ShopSelectEvent(Player player, ShopInfo shopInfo, boolean intentToBuy)
     {

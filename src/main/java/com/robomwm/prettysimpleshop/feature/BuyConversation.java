@@ -1,8 +1,8 @@
 package com.robomwm.prettysimpleshop.feature;
 
-import com.robomwm.prettysimpleshop.LazyUtil;
+import com.robomwm.prettysimpleshop.ConfigManager;
+import com.robomwm.prettysimpleshop.PrettySimpleShop;
 import com.robomwm.prettysimpleshop.event.ShopSelectEvent;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -25,13 +25,15 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class BuyConversation implements Listener
 {
+    private ConfigManager configManager;
     private JavaPlugin plugin;
     private Set<Player> buyPrompt = ConcurrentHashMap.newKeySet(); //thread safe????????
 
-    public BuyConversation(JavaPlugin plugin)
+    public BuyConversation(PrettySimpleShop plugin)
     {
         this.plugin = plugin;
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
+        this.configManager = plugin.getConfigManager();
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -40,8 +42,7 @@ public class BuyConversation implements Listener
         if (!event.hasIntentToBuy())
             return;
         Player player = event.getPlayer();
-
-        player.sendMessage(LazyUtil.buildPage(plugin.getName() + ": How many ", event.getShopInfo().getHoverableText(), ChatColor.RESET + " would you like to buy?")); //TODO: configurable
+        configManager.sendMessage(player, "buyPrompt", event.getShopInfo().getItemName());
         buyPrompt.add(player);
     }
 
@@ -67,7 +68,7 @@ public class BuyConversation implements Listener
                 @Override
                 public void run()
                 {
-                    event.getPlayer().performCommand("/buy " + amount); //TODO: call directly
+                    event.getPlayer().performCommand("buy " + amount); //TODO: call directly
                 }
             }.runTask(plugin);
         }

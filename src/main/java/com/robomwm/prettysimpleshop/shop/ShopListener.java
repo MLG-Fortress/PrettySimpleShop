@@ -1,7 +1,6 @@
 package com.robomwm.prettysimpleshop.shop;
 
 import com.robomwm.prettysimpleshop.ConfigManager;
-import com.robomwm.prettysimpleshop.LazyUtil;
 import com.robomwm.prettysimpleshop.PrettySimpleShop;
 import com.robomwm.prettysimpleshop.ReflectionHandler;
 import com.robomwm.prettysimpleshop.event.ShopBreakEvent;
