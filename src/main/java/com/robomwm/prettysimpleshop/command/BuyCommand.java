@@ -152,9 +152,10 @@ public class BuyCommand implements CommandExecutor, Listener
 
         economy.withdrawPlayer(player, itemStack.getAmount() * shopInfo.getPrice());
 
+        int rows = ((itemStack.getAmount() / itemStack.getMaxStackSize()) + 1) / 9 + 1;
         ShopInventoryHolder shopInventoryHolder = new ShopInventoryHolder();
         Inventory inventory = player.getServer().createInventory(shopInventoryHolder,
-                ((itemStack.getAmount() * itemStack.getMaxStackSize()) / 9) + 1,
+                rows * 9,
                 config.getString("transactionCompleted", Integer.toString(itemStack.getAmount()), "", economy.format(itemStack.getAmount() * shopInfo.getPrice())));
         inventory.addItem(itemStack);
         shopInventoryHolder.setInventory(inventory);
