@@ -43,7 +43,7 @@ public class PrettySimpleShop extends JavaPlugin
         getCommand("shop").setExecutor(new HelpCommand(this));
         getCommand("setprice").setExecutor(new PriceCommand(shopListener));
         getCommand("buy").setExecutor(new BuyCommand(this, shopListener, economy));
-        if (config.getBoolean("useConversations"))
+        if (config.getBoolean("useBuyPrompt"))
             new BuyConversation(this);
     }
 
