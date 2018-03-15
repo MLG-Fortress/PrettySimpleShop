@@ -153,20 +153,20 @@ public class BuyCommand implements CommandExecutor, Listener
 
         config.sendMessage(player, "transactionCompleted", Integer.toString(itemStack.getAmount()), PrettySimpleShop.getItemName(itemStack), economy.format(itemStack.getAmount() * shopInfo.getPrice()));
 
+        player.getServer().getPluginManager().callEvent(new ShopBoughtEvent(player, shopInfo));
+
         int rows = ((itemStack.getAmount() / itemStack.getMaxStackSize()) + 1) / 9 + 1;
         ShopInventoryHolder shopInventoryHolder = new ShopInventoryHolder();
         Inventory inventory = player.getServer().createInventory(shopInventoryHolder,
                 rows * 9,
                 config.getString("transactionCompletedWindow", Integer.toString(itemStack.getAmount()), PrettySimpleShop.getItemName(itemStack), economy.format(itemStack.getAmount() * shopInfo.getPrice())));
         inventory.setMaxStackSize(itemStack.getMaxStackSize());
-        inventory.addItem(itemStack);
+        inventory.addItem(itemStack); //Note: mutates the itemstack amount
         shopInventoryHolder.setInventory(inventory);
         player.openInventory(inventory);
 
         //Map<Integer, ItemStack> leftovers = player.getInventory().addItem(itemStack);
-
-        player.getServer().getPluginManager().callEvent(new ShopBoughtEvent(player, shopInfo));
-
+        
 //        if (!leftovers.isEmpty())
 //        {
 //            player.sendMessage("Somehow you bought more than you can hold and we didn't detect this. Please report this issue with the following debug info:");
