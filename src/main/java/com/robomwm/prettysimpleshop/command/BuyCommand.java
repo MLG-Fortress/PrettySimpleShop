@@ -99,11 +99,11 @@ public class BuyCommand implements CommandExecutor, Listener
             return false;
         }
 
-        buyCommand((Player)sender, quantity);
+        buyCommand(player, quantity, args.length == 2 && args[1].equalsIgnoreCase("confirm"));
         return true;
     }
 
-    public boolean buyCommand(Player player, int amount)
+    public boolean buyCommand(Player player, int amount, boolean confirm)
     {
         ShopInfo shopInfo = shopListener.getSelectedShop(player);
         if (shopInfo == null)
@@ -133,11 +133,13 @@ public class BuyCommand implements CommandExecutor, Listener
 
         if (config.getBoolean("confirmTransactions"))
         {
-            if (!unconfirmedTransactionMap.containsKey(player) || !unconfirmedTransactionMap.remove(player).matches(shopInfo, amount))
+            if (!confirm || !unconfirmedTransactionMap.containsKey(player)
+                    || !unconfirmedTransactionMap.remove(player).matches(shopInfo, amount))
             {
                 unconfirmedTransactionMap.put(player, new UnconfirmedTransaction(player, shopInfo, amount, config, economy, bookUtil));
                 return true;
             }
+            unconfirmedTransactionMap.remove(player);
         }
 
         ItemStack itemStack = shopAPI.performTransaction(shopAPI.getChest(shopInfo.getLocation()), shopInfo.getItem(), shopInfo.getPrice());
@@ -154,6 +156,7 @@ public class BuyCommand implements CommandExecutor, Listener
         Inventory inventory = player.getServer().createInventory(shopInventoryHolder,
                 rows * 9,
                 config.getString("transactionCompletedWindow", Integer.toString(itemStack.getAmount()), PrettySimpleShop.getItemName(itemStack), economy.format(itemStack.getAmount() * shopInfo.getPrice())));
+        inventory.setMaxStackSize(itemStack.getMaxStackSize());
         inventory.addItem(itemStack);
         shopInventoryHolder.setInventory(inventory);
         player.openInventory(inventory);
@@ -216,7 +219,7 @@ class UnconfirmedTransaction
         bookMeta.spigot().addPage(LazyUtil.buildPage(Integer.toString(amount) + " " , shopInfo.getHoverableText(),
                 "\n\n", config.getString("TotalCost", economy.format(amount * shopInfo.getPrice())),
                 "\n\n", config.getString("currentBalanceAndCost", economy.format(economy.getBalance(player)), economy.format( economy.getBalance(player) - amount * shopInfo.getPrice())),
-                "\n\n", LazyUtil.getClickableCommand(config.getString("Confirm"), "/buy " + amount),
+                "\n\n", LazyUtil.getClickableCommand(config.getString("Confirm"), "/buy " + amount + " confirm"),
                 " ", LazyUtil.getClickableCommand(config.getString("Cancel"), "/buy cancel")));
 
         book.setItemMeta(bookMeta);
