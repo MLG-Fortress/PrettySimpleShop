@@ -151,6 +151,8 @@ public class BuyCommand implements CommandExecutor, Listener
 
         economy.withdrawPlayer(player, itemStack.getAmount() * shopInfo.getPrice());
 
+        config.sendMessage(player, "transactionCompleted", Integer.toString(itemStack.getAmount()), PrettySimpleShop.getItemName(itemStack), economy.format(itemStack.getAmount() * shopInfo.getPrice()));
+
         int rows = ((itemStack.getAmount() / itemStack.getMaxStackSize()) + 1) / 9 + 1;
         ShopInventoryHolder shopInventoryHolder = new ShopInventoryHolder();
         Inventory inventory = player.getServer().createInventory(shopInventoryHolder,
@@ -162,8 +164,6 @@ public class BuyCommand implements CommandExecutor, Listener
         player.openInventory(inventory);
 
         //Map<Integer, ItemStack> leftovers = player.getInventory().addItem(itemStack);
-
-        config.sendMessage(player, "transactionCompleted", Integer.toString(itemStack.getAmount()), PrettySimpleShop.getItemName(itemStack), economy.format(itemStack.getAmount() * shopInfo.getPrice()));
 
         player.getServer().getPluginManager().callEvent(new ShopBoughtEvent(player, shopInfo));
 
