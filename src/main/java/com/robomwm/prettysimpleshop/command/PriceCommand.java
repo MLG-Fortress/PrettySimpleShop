@@ -35,6 +35,7 @@ public class PriceCommand implements CommandExecutor
         try
         {
             price = Double.valueOf(args[0]);
+            price = Math.floor(price * 100) / 100;
         }
         catch (Throwable rock)
         {
