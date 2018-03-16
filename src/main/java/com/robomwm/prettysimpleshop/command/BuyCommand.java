@@ -166,7 +166,7 @@ public class BuyCommand implements CommandExecutor, Listener
         player.openInventory(inventory);
 
         //Map<Integer, ItemStack> leftovers = player.getInventory().addItem(itemStack);
-        
+
 //        if (!leftovers.isEmpty())
 //        {
 //            player.sendMessage("Somehow you bought more than you can hold and we didn't detect this. Please report this issue with the following debug info:");
