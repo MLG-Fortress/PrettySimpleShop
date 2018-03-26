@@ -21,6 +21,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.ItemDespawnEvent;
+import org.bukkit.event.inventory.InventoryPickupItemEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.inventory.ItemStack;
@@ -177,6 +179,12 @@ public class ShowoffItem implements Listener
         if (!config.isWhitelistedWorld(event.getItem().getLocation().getWorld()))
             return;
         event.setCancelled(event.getItem().hasMetadata("NO_PICKUP"));
+    }
+    @EventHandler(ignoreCancelled = true)
+    private void onHopperPickup(InventoryPickupItemEvent event)
+    {
+        if (event.getInventory().getType() == InventoryType.HOPPER)
+            event.setCancelled(event.getItem().hasMetadata("NO_PICKUP"));
     }
 
     @EventHandler
