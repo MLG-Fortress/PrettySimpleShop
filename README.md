@@ -11,6 +11,8 @@ Left-click a shop to view item details (hover over text in chat), and then /buy 
 Revenues from sales are transferred to the player when they open the chest.
 
 ![](https://i.imgur.com/j15bGIw.png)
+![](https://i.imgur.com/Y2M8sZO.png)
+![](https://i.imgur.com/UCcBvE5.png)
 ![](https://i.imgur.com/blcPnT0.png)
 
 ## Commands
