@@ -5,7 +5,6 @@ import com.robomwm.prettysimpleshop.PrettySimpleShop;
 import com.robomwm.prettysimpleshop.event.ShopBoughtEvent;
 import com.robomwm.prettysimpleshop.event.ShopBreakEvent;
 import com.robomwm.prettysimpleshop.event.ShopOpenCloseEvent;
-import com.robomwm.prettysimpleshop.event.ShopPricedEvent;
 import com.robomwm.prettysimpleshop.event.ShopSelectEvent;
 import com.robomwm.prettysimpleshop.shop.ShopAPI;
 import com.robomwm.prettysimpleshop.shop.ShopInfo;
@@ -28,7 +27,6 @@ import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
@@ -49,7 +47,7 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class ShowoffItem implements Listener
 {
-    private JavaPlugin instance;
+    private PrettySimpleShop plugin;
     private ShopAPI shopAPI;
     private YamlConfiguration cache;
     private File cacheFile;
@@ -58,7 +56,7 @@ public class ShowoffItem implements Listener
 
     public ShowoffItem(PrettySimpleShop plugin, ShopAPI shopAPI)
     {
-        instance = plugin;
+        this.plugin = plugin;
         config = plugin.getConfigManager();
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
         this.shopAPI = shopAPI;
@@ -92,7 +90,7 @@ public class ShowoffItem implements Listener
         }
         catch (Throwable rock)
         {
-            instance.getLogger().warning("Unable to save cache file: " + rock.getMessage());
+            plugin.getLogger().warning("Unable to save cache file: " + rock.getMessage());
         }
     }
 
@@ -118,7 +116,7 @@ public class ShowoffItem implements Listener
             public void run()
             {
 
-                Set<Coordinate> blocksToCheck = new HashSet<>();
+                Set<Location> blocksToCheck = new HashSet<>();
                 for (int x = 0; x < 16; x++)
                 {
                     for (int z = 0; z < 16; z++)
@@ -127,7 +125,7 @@ public class ShowoffItem implements Listener
                         {
                             if (chunkSnapshot.getBlockType(x, y, z) == Material.CHEST)
                             {
-                                blocksToCheck.add(new Coordinate(chunk, x, y, z));
+                                blocksToCheck.add(new Location(chunk.getWorld(), x, y, z));
                             }
                         }
                     }
@@ -139,20 +137,23 @@ public class ShowoffItem implements Listener
                     public void run()
                     {
                         boolean noShops = true;
-                        for (Coordinate coordinate : blocksToCheck)
+                        for (Location location : blocksToCheck)
                         {
-                            if (!coordinate.getChunk().isLoaded())
+                            if (!location.getChunk().isLoaded())
                                 return;
-                            if (spawnItem((Chest)coordinate.getChunk().getBlock(coordinate.getX(), coordinate.getY(), coordinate.getZ()).getState())
+                            Chest chest = shopAPI.getChest(location);
+                            if (chest == null || !shopAPI.isShop(chest, false))
+                                continue;
+                            if (spawnItem(new ShopInfo(location, plugin.getShopAPI().getItemStack(chest), plugin.getShopAPI().getPrice(chest)))
                                     && noShops)
                                 noShops = false;
                         }
                         if (noShops)
                             removeCachedChunk(chunk);
                     }
-                }.runTask(instance);
+                }.runTask(plugin);
             }
-        }.runTaskAsynchronously(instance);
+        }.runTaskAsynchronously(plugin);
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -231,7 +232,7 @@ public class ShowoffItem implements Listener
         item.setCustomName(name);
         item.setCustomNameVisible(true);
         item.setVelocity(new Vector(0, 0.01, 0));
-        item.setMetadata("NO_PICKUP", new FixedMetadataValue(instance, this));
+        item.setMetadata("NO_PICKUP", new FixedMetadataValue(plugin, this));
         spawnedItems.put(location, item);
         cacheChunk(location.getChunk());
         try
@@ -273,41 +274,5 @@ public class ShowoffItem implements Listener
         for (Item item : spawnedItems.values())
             item.remove();
         spawnedItems.clear();
-    }
-}
-
-class Coordinate
-{
-    private Chunk chunk;
-    private int x;
-    private int y;
-    private int z;
-
-    Coordinate(Chunk chunk, int x, int y, int z)
-    {
-        this.chunk = chunk;
-        this.x = x;
-        this.y = y;
-        this.z = z;
-    }
-
-    public Chunk getChunk()
-    {
-        return chunk;
-    }
-
-    public int getX()
-    {
-        return x;
-    }
-
-    public int getY()
-    {
-        return y;
-    }
-
-    public int getZ()
-    {
-        return z;
     }
 }
