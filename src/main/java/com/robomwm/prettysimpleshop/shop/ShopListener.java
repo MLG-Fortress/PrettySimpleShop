@@ -126,7 +126,7 @@ public class ShopListener implements Listener
             return true;
         }
 
-        ShopInfo shopInfo = new ShopInfo(chest.getLocation(), item, price);
+        ShopInfo shopInfo = new ShopInfo(shopAPI.getLocation(chest), item, price);
 
         ShopSelectEvent shopSelectEvent = new ShopSelectEvent(player, shopInfo, shopInfo.equals(selectedShop.get(player)) || wantToBuy);
 
