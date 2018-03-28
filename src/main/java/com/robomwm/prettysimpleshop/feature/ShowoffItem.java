@@ -8,6 +8,7 @@ import com.robomwm.prettysimpleshop.event.ShopOpenCloseEvent;
 import com.robomwm.prettysimpleshop.event.ShopPricedEvent;
 import com.robomwm.prettysimpleshop.event.ShopSelectEvent;
 import com.robomwm.prettysimpleshop.shop.ShopAPI;
+import com.robomwm.prettysimpleshop.shop.ShopInfo;
 import org.bukkit.Chunk;
 import org.bukkit.ChunkSnapshot;
 import org.bukkit.Location;
@@ -188,25 +189,19 @@ public class ShowoffItem implements Listener
     }
 
     @EventHandler
-    private void onShopPriced(ShopPricedEvent event)
-    {
-        spawnItem((Chest)event.getLocation().getBlock().getState());
-    }
-
-    @EventHandler
     private void onShopBought(ShopBoughtEvent event)
     {
-        spawnItem((Chest)event.getShopInfo().getLocation().getBlock().getState());
+        spawnItem(event.getShopInfo());
     }
     @EventHandler
     private void onShopSelect(ShopSelectEvent event)
     {
-        spawnItem((Chest)event.getShopInfo().getLocation().getBlock().getState());
+        spawnItem(event.getShopInfo());
     }
     @EventHandler
     private void onShopOpen(ShopOpenCloseEvent event)
     {
-        spawnItem((Chest)event.getShopInfo().getLocation().getBlock().getState());
+        spawnItem(event.getShopInfo());
     }
 
     @EventHandler
@@ -221,12 +216,10 @@ public class ShowoffItem implements Listener
             event.setCancelled(true);
     }
 
-    private boolean spawnItem(Chest chest)
+    private boolean spawnItem(ShopInfo shopInfo)
     {
-        if (!shopAPI.isShop(chest))
-            return false;
-        Location location = shopAPI.getLocation(chest);
-        ItemStack itemStack = shopAPI.getItemStack(chest);
+        Location location = shopInfo.getLocation();
+        ItemStack itemStack = shopInfo.getItem();
         despawnItem(location);
         if (itemStack == null)
             return false;
