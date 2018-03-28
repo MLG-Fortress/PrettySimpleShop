@@ -21,7 +21,7 @@ public class HelpCommand implements CommandExecutor
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args)
     {
         sender.sendMessage(ChatColor.LIGHT_PURPLE + "PrettySimpleShop version " + plugin.getDescription().getVersion() + " by " + ChatColor.RED + "RoboMWM");
-        sender.sendMessage("shopCommand");
+        plugin.getConfigManager().sendMessage(sender, "shopCommand");
         return true;
     }
 }
