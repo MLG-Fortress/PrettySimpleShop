@@ -1,6 +1,6 @@
 name: PrettySimpleShop
 version: ${project.version}
-#website:
+website: http://robomwm.com
 author: RoboMWM
 main: com.robomwm.prettysimpleshop.PrettySimpleShop
 softdepend:
