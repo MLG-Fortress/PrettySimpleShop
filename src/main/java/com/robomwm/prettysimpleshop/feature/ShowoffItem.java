@@ -61,22 +61,7 @@ public class ShowoffItem implements Listener
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
         this.shopAPI = shopAPI;
         cacheFile = new File(plugin.getDataFolder(), "chunksContainingShops.data");
-        if (!cacheFile.exists())
-        {
-            try
-            {
-                cacheFile.createNewFile();
-                cache = YamlConfiguration.loadConfiguration(cacheFile);
-                cache.set("chunks", new ArrayList<String>());
-            }
-            catch (IOException e)
-            {
-                e.printStackTrace();
-                cache = new YamlConfiguration();
-            }
-        }
-        else
-            cache = YamlConfiguration.loadConfiguration(cacheFile);
+        cache = YamlConfiguration.loadConfiguration(cacheFile);
         for (World world : plugin.getServer().getWorlds())
             for (Chunk chunk : world.getLoadedChunks())
                 loadShopItemsInChunk(chunk);
@@ -125,7 +110,7 @@ public class ShowoffItem implements Listener
                         {
                             if (chunkSnapshot.getBlockType(x, y, z) == Material.CHEST)
                             {
-                                blocksToCheck.add(new Location(chunk.getWorld(), x, y, z));
+                                blocksToCheck.add(new Location(chunk.getWorld(), x + (chunk.getX() * 16), y, z + (chunk.getZ() * 16)));
                             }
                         }
                     }
