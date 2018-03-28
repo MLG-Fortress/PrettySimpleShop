@@ -227,7 +227,7 @@ public class ShowoffItem implements Listener
         String name = PrettySimpleShop.getItemName(itemStack); //TODO: make configurable
         itemStack.setAmount(1);
         itemStack.getItemMeta().setDisplayName(String.valueOf(ThreadLocalRandom.current().nextInt())); //Prevents merging (idea from SCS) though metadata might be sufficient?
-        Item item = location.clone().add(0.5, 1.2, 0.5).getWorld().dropItem(location, itemStack);
+        Item item = location.getWorld().dropItem(location.clone().add(0.5, 1.2, 0.5), itemStack);
         item.setPickupDelay(Integer.MAX_VALUE);
         item.setCustomName(name);
         item.setCustomNameVisible(true);
