@@ -39,6 +39,11 @@ public class ShopAPI
         this.salesKey = salesKey;
     }
 
+    /**
+     * Returns a copy of the items in this shop, with amount being the total amount available
+     * @param chest
+     * @return
+     */
     public ItemStack getItemStack(Chest chest)
     {
         Validate.notNull(chest);
@@ -228,22 +233,23 @@ public class ShopAPI
         PrettySimpleShop.debug(shopItem.toString() + item.toString());
         PrettySimpleShop.debug("item validated");
         //Verify stock - cap to max stock remaining
-        if (item.getAmount() > shopItem.getAmount())
-            item.setAmount(shopItem.getAmount());
+        //We use and return the shopItem since this is already a cloned ItemStack (instead of also cloning item)
+        if (item.getAmount() < shopItem.getAmount())
+            shopItem.setAmount(item.getAmount());
 
         //Update statistics/revenue first, otherwise will overwrite inventory changes
         String[] name = getName(chest).split(" ");
-        name[3] = Long.toString(Long.valueOf(name[3]) + item.getAmount());
+        name[3] = Long.toString(Long.valueOf(name[3]) + shopItem.getAmount());
         double revenue = getRevenue(chest, false);
         PrettySimpleShop.debug("rev" + revenue);
-        revenue += item.getAmount() * price;
+        revenue += shopItem.getAmount() * price;
         name[4] = "\u00A7\u00A7" + Double.toString(revenue);
         if (!setName(chest, StringUtils.join(name, " ")))
             return null;
 
         Inventory inventory = getInventory(chest);
-        inventory.removeItem(item);
+        inventory.removeItem(shopItem);
 
-        return item;
+        return shopItem;
     }
 }

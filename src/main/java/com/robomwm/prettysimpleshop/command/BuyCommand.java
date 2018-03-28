@@ -153,6 +153,7 @@ public class BuyCommand implements CommandExecutor, Listener
 
         config.sendMessage(player, "transactionCompleted", Integer.toString(itemStack.getAmount()), PrettySimpleShop.getItemName(itemStack), economy.format(itemStack.getAmount() * shopInfo.getPrice()));
 
+        shopInfo.getItem().setAmount(itemStack.getAmount());
         player.getServer().getPluginManager().callEvent(new ShopBoughtEvent(player, shopInfo));
 
         int rows = ((itemStack.getAmount() / itemStack.getMaxStackSize()) + 1) / 9 + 1;
@@ -161,7 +162,7 @@ public class BuyCommand implements CommandExecutor, Listener
                 rows * 9,
                 config.getString("transactionCompletedWindow", Integer.toString(itemStack.getAmount()), PrettySimpleShop.getItemName(itemStack), economy.format(itemStack.getAmount() * shopInfo.getPrice())));
         inventory.setMaxStackSize(itemStack.getMaxStackSize());
-        inventory.addItem(itemStack); //Note: mutates the itemstack amount
+        inventory.addItem(itemStack); //Note: mutates the itemstack's amount
         shopInventoryHolder.setInventory(inventory);
         player.openInventory(inventory);
 
