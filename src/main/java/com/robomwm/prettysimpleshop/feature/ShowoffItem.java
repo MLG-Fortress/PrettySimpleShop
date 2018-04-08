@@ -15,6 +15,8 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Chest;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Item;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -31,8 +33,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -146,7 +146,7 @@ public class ShowoffItem implements Listener
     {
         if (!config.isWhitelistedWorld(event.getWorld()))
             return;
-        if (event.getChunk().getEntities().length < 1) //Assuming this is already calculated? If not, should remove this check
+        if (event.getChunk().getEntities().length == 0) //Assuming this is already calculated? If not, should remove this check
             return;
         Iterator<Location> locations = spawnedItems.keySet().iterator();
         while (locations.hasNext()) //can optimize later via mapping chunks if needed
@@ -157,6 +157,13 @@ public class ShowoffItem implements Listener
                 spawnedItems.get(location).remove();
                 locations.remove();
             }
+        }
+
+        //Cleanup dropped items that may have been moved away from the chunk they spawned at
+        for (Entity entity : event.getChunk().getEntities())
+        {
+            if (entity.getType() == EntityType.DROPPED_ITEM && entity.hasMetadata("NO_PICKUP"))
+                entity.remove();
         }
     }
 
@@ -204,7 +211,7 @@ public class ShowoffItem implements Listener
 
     private boolean spawnItem(ShopInfo shopInfo)
     {
-        Location location = shopInfo.getLocation();
+        Location location = shopInfo.getLocation().add(0.5, 1.2, 0.5);
         ItemStack itemStack = shopInfo.getItem();
         despawnItem(location);
         if (itemStack == null)
@@ -212,7 +219,7 @@ public class ShowoffItem implements Listener
         String name = PrettySimpleShop.getItemName(itemStack); //TODO: make configurable
         itemStack.setAmount(1);
         itemStack.getItemMeta().setDisplayName(String.valueOf(ThreadLocalRandom.current().nextInt())); //Prevents merging (idea from SCS) though metadata might be sufficient?
-        Item item = location.getWorld().dropItem(location.clone().add(0.5, 1.2, 0.5), itemStack);
+        Item item = location.getWorld().dropItem(location, itemStack);
         item.setPickupDelay(Integer.MAX_VALUE);
         item.setCustomName(name);
         item.setCustomNameVisible(true);
@@ -220,11 +227,11 @@ public class ShowoffItem implements Listener
         item.setMetadata("NO_PICKUP", new FixedMetadataValue(plugin, this));
         spawnedItems.put(location, item);
         cacheChunk(location.getChunk());
-        try
+        try //spigot compat (switch to Paper!)
         {
             item.setCanMobPickup(false);
         }
-        catch (Throwable rock){} //switch to Paper
+        catch (Throwable rock){}
         return true;
     }
 

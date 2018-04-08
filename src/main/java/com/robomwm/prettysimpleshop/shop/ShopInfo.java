@@ -39,7 +39,7 @@ public class ShopInfo
 
     public Location getLocation()
     {
-        return location;
+        return location.clone();
     }
 
     public double getPrice()
@@ -49,7 +49,7 @@ public class ShopInfo
 
     public ItemStack getItem()
     {
-        return item;
+        return item.clone();
     }
 
     public String getItemName()
