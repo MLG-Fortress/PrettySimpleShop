@@ -129,7 +129,10 @@ public class ShowoffItem implements Listener
                             Chest chest = shopAPI.getChest(location);
                             if (chest == null || !shopAPI.isShop(chest, false))
                                 continue;
-                            if (spawnItem(new ShopInfo(shopAPI.getLocation(chest), plugin.getShopAPI().getItemStack(chest), plugin.getShopAPI().getPrice(chest)))
+                            ItemStack item = shopAPI.getItemStack(chest);
+                            if (item == null)
+                                continue;
+                            if (spawnItem(new ShopInfo(shopAPI.getLocation(chest), item, plugin.getShopAPI().getPrice(chest)))
                                     && noShops)
                                 noShops = false;
                         }
