@@ -132,7 +132,7 @@ public class ShowoffItem implements Listener
                             ItemStack item = shopAPI.getItemStack(chest);
                             if (item == null)
                                 continue;
-                            if (spawnItem(new ShopInfo(shopAPI.getLocation(chest), item, plugin.getShopAPI().getPrice(chest)))
+                            if (spawnItem(new ShopInfo(shopAPI.getLocation(chest), item, plugin.getShopAPI().getPrice(chest))))
                                 noShops = false; //Shops exist in this chunk
                         }
                         if (noShops)
@@ -148,8 +148,8 @@ public class ShowoffItem implements Listener
     {
         if (!config.isWhitelistedWorld(event.getWorld()))
             return;
-        if (event.getChunk().getEntities().length == 0) //Assuming this is already calculated? If not, should remove this check
-            return;
+
+        //Remove showcased items for shops that are about to be unloaded
         Iterator<Location> locations = spawnedItems.keySet().iterator();
         while (locations.hasNext()) //can optimize later via mapping chunks if needed
         {
