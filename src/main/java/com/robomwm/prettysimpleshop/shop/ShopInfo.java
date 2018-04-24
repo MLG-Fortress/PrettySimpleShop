@@ -26,6 +26,15 @@ public class ShopInfo
         this.price = price;
     }
 
+    public ShopInfo(ShopInfo shopInfo, int amount)
+    {
+        this.location = shopInfo.location.clone();
+        this.item = shopInfo.item.clone();
+        this.item.setAmount(amount);
+        this.price = shopInfo.price;
+        this.hoverableText = shopInfo.hoverableText;
+    }
+
     public void setHoverableText(TextComponent hoverableText)
     {
         this.hoverableText = new TextComponent(hoverableText);

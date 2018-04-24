@@ -124,17 +124,18 @@ public class BuyCommand implements CommandExecutor, Listener
             return false;
         }
 
-        shopInfo.getItem().setAmount(amount);
+        ItemStack itemStack = shopInfo.getItem();
+        itemStack.setAmount(amount);
 
-        if (!hasInventorySpace(player, shopInfo.getItem()))
+        if (!hasInventorySpace(player, itemStack))
         {
             config.sendMessage(player, "noSpace");
         }
 
         if (config.getBoolean("confirmTransactions"))
         {
-            if (!confirm || !unconfirmedTransactionMap.containsKey(player)
-                    || !unconfirmedTransactionMap.remove(player).matches(shopInfo, amount))
+            if (!confirm && (!unconfirmedTransactionMap.containsKey(player)
+                    || !unconfirmedTransactionMap.remove(player).matches(shopInfo, amount)))
             {
                 unconfirmedTransactionMap.put(player, new UnconfirmedTransaction(player, shopInfo, amount, config, economy, bookUtil));
                 return true;
@@ -142,7 +143,7 @@ public class BuyCommand implements CommandExecutor, Listener
             unconfirmedTransactionMap.remove(player);
         }
 
-        ItemStack itemStack = shopAPI.performTransaction(shopAPI.getChest(shopInfo.getLocation()), shopInfo.getItem(), shopInfo.getPrice());
+        itemStack = shopAPI.performTransaction(shopAPI.getChest(shopInfo.getLocation()), itemStack, shopInfo.getPrice());
         if (itemStack == null)
         {
             config.sendMessage(player, "shopModified");
@@ -153,7 +154,7 @@ public class BuyCommand implements CommandExecutor, Listener
 
         config.sendMessage(player, "transactionCompleted", Integer.toString(itemStack.getAmount()), PrettySimpleShop.getItemName(itemStack), economy.format(itemStack.getAmount() * shopInfo.getPrice()));
 
-        shopInfo.getItem().setAmount(itemStack.getAmount());
+        shopInfo = new ShopInfo(shopInfo, itemStack.getAmount());
         player.getServer().getPluginManager().callEvent(new ShopBoughtEvent(player, shopInfo));
 
         int rows = ((itemStack.getAmount() / itemStack.getMaxStackSize()) + 1) / 9 + 1;
