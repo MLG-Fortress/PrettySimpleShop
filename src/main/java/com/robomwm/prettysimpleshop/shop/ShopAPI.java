@@ -40,14 +40,18 @@ public class ShopAPI
     }
 
     /**
-     * Returns a copy of the items in this shop, with amount being the total amount available
+     * Returns a copy of the item sold in this shop.
+     * The total quantity available is stored in ItemStack#getAmount
+     * 
+     * Will return null if !item#isSimilar to another in the chest.
+     * 
      * @param chest
-     * @return
+     * @return the item sold, or null if either no item exists or multiple types of items are present in the chest
      */
     public ItemStack getItemStack(Chest chest)
     {
         Validate.notNull(chest);
-        Inventory inventory = getInventory(chest);
+        Inventory inventory = chest.getInventory();
         if (inventory == null)
             return null;
         ItemStack item = null;
@@ -140,16 +144,6 @@ public class ShopAPI
                 return 0;
         }
         return revenue;
-    }
-
-    /**
-     * Apparently DoubleChests will return its inventory when doing this even though it's a chest idk it's stupid
-     * @param chest
-     * @return
-     */
-    private Inventory getInventory(Chest chest)
-    {
-        return chest.getInventory();
     }
 
     /**
@@ -247,7 +241,7 @@ public class ShopAPI
         if (!setName(chest, StringUtils.join(name, " ")))
             return null;
 
-        Inventory inventory = getInventory(chest);
+        Inventory inventory = chest.getInventory();
         inventory.removeItem(shopItem);
 
         return shopItem;
