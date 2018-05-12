@@ -58,7 +58,9 @@ public class ShopInfo
 
     public ItemStack getItem()
     {
-        return item.clone();
+        if (item != null)
+            return item.clone();
+        return null;
     }
 
     public String getItemName()
