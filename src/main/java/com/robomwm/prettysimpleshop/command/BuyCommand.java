@@ -47,7 +47,15 @@ public class BuyCommand implements CommandExecutor, Listener
         this.config = plugin.getConfigManager();
         this.shopAPI = plugin.getShopAPI();
         this.economy = economy;
-        this.bookUtil = new BookUtil(plugin);
+        try
+        {
+            this.bookUtil = new BookUtil(plugin);
+        }
+        catch (Exception e)
+        {
+            plugin.getLogger().warning("BookUtil failed to instantiate. Transaction confirmation will be disabled.");
+            e.printStackTrace();
+        }
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
@@ -132,7 +140,7 @@ public class BuyCommand implements CommandExecutor, Listener
             config.sendMessage(player, "noSpace");
         }
 
-        if (config.getBoolean("confirmTransactions"))
+        if (config.getBoolean("confirmTransactions") && bookUtil != null)
         {
             if (!confirm && (!unconfirmedTransactionMap.containsKey(player)
                     || !unconfirmedTransactionMap.remove(player).matches(shopInfo, amount)))

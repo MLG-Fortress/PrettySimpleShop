@@ -3,6 +3,7 @@ version: ${project.version}
 website: http://robomwm.com
 author: RoboMWM
 main: com.robomwm.prettysimpleshop.PrettySimpleShop
+api-version: 1.13
 softdepend:
 - Multiverse-Core
 - Essentials
