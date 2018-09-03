@@ -1,20 +1,14 @@
 package com.robomwm.prettysimpleshop.shop;
 
 import com.robomwm.prettysimpleshop.PrettySimpleShop;
-import net.milkbowl.vault.economy.Economy;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.BlockState;
 import org.bukkit.block.Chest;
 import org.bukkit.block.DoubleChest;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
-
-import java.text.NumberFormat;
-import java.util.Iterator;
 
 /**
  * Created on 2/6/2018.
@@ -98,8 +92,9 @@ public class ShopAPI
     {
         String theName = getName(chest);
         PrettySimpleShop.debug("setPrice:" + theName + ";");
-        if (!isShop(theName, true))
-            return false;
+        //Now any chest can be a shop. May add configuration for this if desired.
+//        if (!isShop(theName, true))
+//            return false;
         String[] name = theName.split(" ");
         PrettySimpleShop.debug("setPrice:" + name.length);
         if (name.length == 1 && name[0].equalsIgnoreCase(shopKey))

@@ -69,9 +69,7 @@ public class ConfigManager
         messageSection.addDefault("buyPrompt", "&dPrettySimpleShop: &rHow many {0} &rwould you like to buy?");
         messageSection.addDefault("TotalCost", "for a total cost of {0}");
         messageSection.addDefault("currentBalanceAndCost", "You have {0} and will have {1} after confirming.");
-        messageSection.addDefault("shopCommand", "To create a shop, place a chest named: &oshop&r\n" +
-                "Tip: You can use an anvil to rename a chest.\n" +
-                "Use /setprice to a set a price.\n" +
+        messageSection.addDefault("shopCommand", "To create a shop, put items of the same type in a chest, and use /setprice to set the price per item.\n" +
                 "Use /buy to buy from a shop.");
         messageSection.addDefault("Confirm", "&2[Confirm]");
         messageSection.addDefault("Cancel", "&4[Cancel]");
