@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
 
 /**
  * Created on 2/16/2017.
@@ -167,7 +168,7 @@ public class ConfigManager
         int i = 0;
         for (String arg : args)
         {
-            stringToFill = stringToFill.replaceAll("\\{" + i + "}", arg);
+            stringToFill = stringToFill.replaceAll("\\{" + i + "}", Matcher.quoteReplacement(arg));
             i++;
         }
         return stringToFill;
