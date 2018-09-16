@@ -197,14 +197,6 @@ public class ShopListener implements Listener
             return;
         }
 
-        instance.getServer().getPluginManager().callEvent(new ShopOpenCloseEvent(player, new ShopInfo(shopAPI.getLocation(chest), shopAPI.getItemStack(chest), shopAPI.getPrice(chest)), true));
-
-        double deposit = shopAPI.getRevenue(chest, true);
-        if (deposit <= 0)
-            return;
-        economy.depositPlayer(player, deposit);
-        config.sendMessage(player, "collectRevenue", economy.format(deposit));
-
         if (priceSetter.containsKey(player))
         {
             double newPrice = priceSetter.remove(player);
@@ -212,6 +204,14 @@ public class ShopListener implements Listener
             config.sendMessage(player, "priceApplied", economy.format(newPrice));
             instance.getServer().getPluginManager().callEvent(new ShopPricedEvent(player, chest.getLocation(), newPrice));
         }
+
+        instance.getServer().getPluginManager().callEvent(new ShopOpenCloseEvent(player, new ShopInfo(shopAPI.getLocation(chest), shopAPI.getItemStack(chest), shopAPI.getPrice(chest)), true));
+
+        double deposit = shopAPI.getRevenue(chest, true);
+        if (deposit <= 0)
+            return;
+        economy.depositPlayer(player, deposit);
+        config.sendMessage(player, "collectRevenue", economy.format(deposit));
     }
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     private void onBreakShop(BlockBreakEvent event)
