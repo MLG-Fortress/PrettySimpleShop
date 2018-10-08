@@ -62,7 +62,7 @@ public class ConfigManager
         messageSection.addDefault("transactionCompletedWindow", "Bought {0} {1} for {2}");
         messageSection.addDefault("transactionCompleted", "Bought {0} {1} for {2}");
         messageSection.addDefault("applyPrice", "&bOpen the shop to apply your shiny new price.");
-        messageSection.addDefault("setPriceCanceled", "&c/setprice canceled: opened chest is not a shop. To make this chest a shop, rename it in an anvil with the name: shop");
+        //messageSection.addDefault("setPriceCanceled", "&c/setprice canceled: opened chest is not a shop. To make this chest a shop, rename it in an anvil with the name: shop");
         messageSection.addDefault("priceApplied", "Price updated to {0}");
         messageSection.addDefault("collectRevenue", "Collected {0} in sales from this shop");
         messageSection.addDefault("tooFar", "&cYou're too far away from this shop");
