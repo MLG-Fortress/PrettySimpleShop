@@ -1,14 +1,13 @@
 # PrettySimpleShop
-A pretty simple shop plugin. No signs required. Supports DoubleChests!
+A pretty simple shop plugin. No signs required. Supports DoubleChests and claim protections!
 
 [Source](https://github.com/MLG-Fortress/PrettySimpleShop) | [Patreon](https://patreon.com/RoboMWM)
 
 ## Getting started
-Simply place a chest, put some items of the same type in it, and /setprice. Tada! You now have a shop!
-
-Left-click a shop to view item details (hover over text in chat), and then /buy as much as you want.
-
-Revenues from sales are transferred to the player when they open the chest.
+- Simply place a chest, put some items of the same type in it, and /setprice. Tada! You now have a shop!
+- Left-click a shop to view item details (hover over text in chat), and then /buy as much as you want.
+- Revenues from sales are transferred to the player when they open the chest.
+- Integrates nicely with region protection plugins. Only players who have access to open the chest can sell items, change prices, and collect revenue.
 
 ![](https://i.imgur.com/j15bGIw.png)
 ![](https://i.imgur.com/Y2M8sZO.png)
