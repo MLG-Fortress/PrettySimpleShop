@@ -190,12 +190,12 @@ public class ShopListener implements Listener
             return;
         Player player = (Player)event.getPlayer();
         Chest chest = shopAPI.getChest(event.getInventory().getLocation());
-        if (!shopAPI.isShop(chest))
-        {
-            if (priceSetter.remove(player) != null)
-                config.sendMessage(player, "setPriceCanceled");
-            return;
-        }
+//        if (!shopAPI.isShop(chest))
+//        {
+//            if (priceSetter.remove(player) != null)
+//                config.sendMessage(player, "setPriceCanceled");
+//            return;
+//        }
 
         if (priceSetter.containsKey(player))
         {
@@ -204,6 +204,9 @@ public class ShopListener implements Listener
             config.sendMessage(player, "priceApplied", economy.format(newPrice));
             instance.getServer().getPluginManager().callEvent(new ShopPricedEvent(player, chest.getLocation(), newPrice));
         }
+
+        if (!shopAPI.isShop(chest))
+            return;
 
         instance.getServer().getPluginManager().callEvent(new ShopOpenCloseEvent(player, new ShopInfo(shopAPI.getLocation(chest), shopAPI.getItemStack(chest), shopAPI.getPrice(chest)), true));
 

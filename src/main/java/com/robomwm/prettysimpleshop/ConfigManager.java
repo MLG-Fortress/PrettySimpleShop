@@ -79,7 +79,7 @@ public class ConfigManager
         if (tipSection == null)
             tipSection = config.createSection("tips");
         tipSection.addDefault("saleInfo", "Hover for item details. Click to /buy");
-        tipSection.addDefault("noStock", "If you are the owner, take note that shops must only contain the same item in its inventory.");
+        tipSection.addDefault("noStock", "If you are the owner, make sure there is only a single item type in the chest.");
 
         config.options().copyDefaults(true);
         instance.saveConfig();
