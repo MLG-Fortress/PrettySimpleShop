@@ -12,6 +12,7 @@ import org.bstats.bukkit.Metrics;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.concurrent.Callable;
 
@@ -30,24 +31,9 @@ public class PrettySimpleShop extends JavaPlugin
 
     public void onEnable()
     {
-        economy = getEconomy();
-        if (economy == null)
-        {
-            getLogger().severe("No economy plugin has been loaded yet. Please let us know which economy plugin you use!");
-            getServer().getPluginManager().disablePlugin(this);
-            return;
-        }
         config = new ConfigManager(this);
         debug = config.isDebug();
         shopAPI = new ShopAPI(config.getString("shopName"), config.getString("price"), config.getString("sales"));
-        ShopListener shopListener = new ShopListener(this, shopAPI, getEconomy(), config);
-        if (config.getBoolean("showOffItems"))
-            showoffItem = new ShowoffItem(this, shopAPI);
-        getCommand("shop").setExecutor(new HelpCommand(this));
-        getCommand("setprice").setExecutor(new PriceCommand(shopListener));
-        getCommand("buy").setExecutor(new BuyCommand(this, shopListener, economy));
-        if (config.getBoolean("useBuyPrompt"))
-            new BuyConversation(this);
         try
         {
             Metrics metrics = new Metrics(this);
@@ -75,6 +61,29 @@ public class PrettySimpleShop extends JavaPlugin
             }
         }
         catch (Throwable ignored) {}
+
+        PrettySimpleShop plugin = this;
+        new BukkitRunnable()
+        {
+            @Override
+            public void run()
+            {
+                economy = getEconomy();
+                if (economy == null)
+                {
+                    getLogger().severe("No economy plugin was found. Disabling.");
+                    getServer().getPluginManager().disablePlugin(plugin);
+                }
+                ShopListener shopListener = new ShopListener(plugin, shopAPI, economy, config);
+                if (config.getBoolean("showOffItems"))
+                    showoffItem = new ShowoffItem(plugin, shopAPI);
+                getCommand("shop").setExecutor(new HelpCommand(plugin));
+                getCommand("setprice").setExecutor(new PriceCommand(shopListener));
+                getCommand("buy").setExecutor(new BuyCommand(plugin, shopListener, economy));
+                if (config.getBoolean("useBuyPrompt"))
+                    new BuyConversation(plugin);
+            }
+        }.runTask(this);
     }
 
     public void onDisable()
