@@ -1,5 +1,5 @@
 # PrettySimpleShop
-A pretty simple shop plugin. No signs required.
+A pretty simple shop plugin. No signs required. Supports DoubleChests!
 
 [Source](https://github.com/MLG-Fortress/PrettySimpleShop) | [Patreon](https://patreon.com/RoboMWM)
 
