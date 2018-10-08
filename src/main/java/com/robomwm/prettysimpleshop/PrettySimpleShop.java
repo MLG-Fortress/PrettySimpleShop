@@ -73,6 +73,7 @@ public class PrettySimpleShop extends JavaPlugin
                 {
                     getLogger().severe("No economy plugin was found. Disabling.");
                     getServer().getPluginManager().disablePlugin(plugin);
+                    return;
                 }
                 ShopListener shopListener = new ShopListener(plugin, shopAPI, economy, config);
                 if (config.getBoolean("showOffItems"))
