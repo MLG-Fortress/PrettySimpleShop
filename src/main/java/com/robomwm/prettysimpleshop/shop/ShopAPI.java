@@ -95,13 +95,22 @@ public class ShopAPI
         //Now any chest can be a shop. May add configuration for this if desired.
 //        if (!isShop(theName, true))
 //            return false;
-        String[] name = theName.split(" ");
-        PrettySimpleShop.debug("setPrice:" + name.length);
-        if (name.length == 1 && name[0].equalsIgnoreCase(shopKey))
-            return setName(chest, priceKey + " " + Double.toString(newPrice) + " " + salesKey + " 0 \u00A7\u00A7");
-        else if (!name[0].equals(priceKey))
-            return false;
 
+        String[] name = null;
+        if (theName != null)
+            name = theName.split(" ");
+
+//        PrettySimpleShop.debug("setPrice:" + name.length);
+//        if (name.length == 1 && name[0].equalsIgnoreCase(shopKey))
+//            return setName(chest, priceKey + " " + Double.toString(newPrice) + " " + salesKey + " 0 \u00A7\u00A7");
+//        else if (!name[0].equals(priceKey))
+//            return false;
+
+        //Shop not named, or named something else (i.e. basically turn it into a shop no matter what)
+        if (name == null || !name[0].equals(priceKey))
+            return setName(chest, priceKey + " " + Double.toString(newPrice) + " " + salesKey + " 0 \u00A7\u00A7");
+
+        //Otherwise, just change the price portion of the string
         name[1] = Double.toString(newPrice);
 
         return setName(chest, StringUtils.join(name, " "));
