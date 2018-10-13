@@ -1,7 +1,7 @@
 # PrettySimpleShop
 A pretty simple shop plugin. No signs required. Supports DoubleChests and claim protections!
 
-[Source](https://github.com/MLG-Fortress/PrettySimpleShop) | [Patreon](https://patreon.com/RoboMWM)
+[Source](https://github.com/MLG-Fortress/PrettySimpleShop) | [Support this project via Patreon!](https://patreon.com/RoboMWM)
 
 ## Getting started
 - To make a shop:
