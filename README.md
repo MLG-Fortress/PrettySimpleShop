@@ -11,7 +11,7 @@ A pretty simple shop plugin. No signs required. Supports DoubleChests and claim 
   4. Tada! You now have a shop!
 - To view item info or buy from a shop:
   1. Left-click a shop to view item details (hover over text in chat)
-  2. Click the shop again, and you will be asked how much you'd like to buy. Simply input the quantity you wish to buy.
+  2. Click the item or the shop again, and you will be asked how much you'd like to buy. Simply input the quantity you wish to buy.
   - Or if you wish to use a command, /buy as much as you want.
   
   
