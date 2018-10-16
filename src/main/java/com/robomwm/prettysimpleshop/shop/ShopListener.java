@@ -112,7 +112,7 @@ public class ShopListener implements Listener
             return;
         if (event.getClickedBlock().getType() == Material.CHEST)
             return;
-        priceSetter.remove(event.getPlayer());
+        priceCommand(event.getPlayer(), null);
     }
 
     public boolean selectShop(Player player, Block block, boolean wantToBuy)
@@ -296,7 +296,8 @@ public class ShopListener implements Listener
     {
         if (price == null)
         {
-            priceSetter.remove(player);
+            if (priceSetter.remove(player) != null)
+                config.sendMessage(player, "setPriceCanceled");
             return;
         }
         selectedShop.remove(player);
