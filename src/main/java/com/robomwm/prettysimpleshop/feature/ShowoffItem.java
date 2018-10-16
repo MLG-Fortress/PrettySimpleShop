@@ -220,7 +220,7 @@ public class ShowoffItem implements Listener
             return false;
         String name = PrettySimpleShop.getItemName(itemStack); //TODO: make configurable
         itemStack.setAmount(1);
-        itemStack.getItemMeta().setDisplayName(String.valueOf(ThreadLocalRandom.current().nextInt())); //Prevents merging (idea from SCS) though metadata might be sufficient?
+        itemStack.getItemMeta().setDisplayName(String.valueOf(ThreadLocalRandom.current().nextInt())); //Prevents merging (idea from SCS) though metadata might be sufficient? Though we could also just use the ItemMergeEvent too but this is probably simpler and more performant.
         Item item = location.getWorld().dropItem(location, itemStack);
         item.setPickupDelay(Integer.MAX_VALUE);
         item.setCustomName(name);
@@ -234,14 +234,19 @@ public class ShowoffItem implements Listener
             item.setCanMobPickup(false);
         }
         catch (Throwable rock){}
+        PrettySimpleShop.debug("Spawned item at " + location);
         return true;
     }
 
     //Modifies Map as well, hence why it's not used in chunkUnloadEvent when we iterate through locations.
     private void despawnItem(Location location)
     {
+        PrettySimpleShop.debug("Attempting to check for and remove item at " + location);
         if (spawnedItems.containsKey(location))
+        {
             spawnedItems.remove(location).remove();
+            PrettySimpleShop.debug("removed item at " + location);
+        }
     }
 
     private void cacheChunk(Chunk chunk)

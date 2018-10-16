@@ -104,6 +104,17 @@ public class ShopListener implements Listener
         selectShop(player, block, false);
     }
 
+    //Clears any set price the player may have inadvertantly forgotten to remove
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+    private void clearSetPrice(PlayerInteractEvent event)
+    {
+        if (event.getAction() == Action.PHYSICAL)
+            return;
+        if (event.getClickedBlock().getType() == Material.CHEST)
+            return;
+        priceSetter.remove(event.getPlayer());
+    }
+
     public boolean selectShop(Player player, Block block, boolean wantToBuy)
     {
         if (block.getType() != Material.CHEST)
@@ -159,7 +170,7 @@ public class ShopListener implements Listener
         text.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/buy " +
                 chest.getLocation().getWorld().getName() + " " + chest.getLocation().getX() + " " +
                 chest.getLocation().getBlockY() + " " + chest.getLocation().getBlockZ()));
-        player.sendMessage(text);
+        player.spigot().sendMessage(text);
         shopInfo.setHoverableText(text);
         config.sendTip(player, "saleInfo");
         instance.getServer().getPluginManager().callEvent(shopSelectEvent);

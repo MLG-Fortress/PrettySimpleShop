@@ -36,6 +36,7 @@ A pretty simple shop plugin. No signs required. Supports DoubleChests and claim 
 
 ## Features
 - Supports DoubleChests! (Wasn't a simple task.)
+- Records shop sales, so you can see how popular a shop is.
 - Supports custom items. Displays custom item name and lore.
 - Players don't even _need_ to know any commands to buy items. Clicking a shop twice will prompt the player to input the quantity they wish to buy from the shop.
 - **No sign formats to memorize!**
