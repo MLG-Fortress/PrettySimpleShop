@@ -14,6 +14,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Chest;
+import org.bukkit.block.DoubleChest;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -21,12 +22,14 @@ import org.bukkit.entity.Item;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.ItemDespawnEvent;
 import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -169,6 +172,29 @@ public class ShowoffItem implements Listener
         }
     }
 
+    //despawn items when a shop chest becomes a doublechest
+    @EventHandler
+    private void onDoubleChest(BlockPlaceEvent event)
+    {
+        if (!config.isWhitelistedWorld(event.getBlock().getWorld()))
+            return;
+        if (event.getBlock().getType() != Material.CHEST)
+            return;
+        new BukkitRunnable()
+        {
+            @Override
+            public void run()
+            {
+                InventoryHolder holder = ((Chest)event.getBlock().getState()).getInventory().getHolder();
+                if (!(holder instanceof DoubleChest))
+                    return;
+                DoubleChest doubleChest = (DoubleChest)holder;
+                despawnItem(doubleChest.getLeftSide().getInventory().getLocation().add(0.5, 1.2, 0.5));
+                despawnItem(doubleChest.getRightSide().getInventory().getLocation().add(0.5, 1.2, 0.5));
+            }
+        }.runTask(plugin);
+    }
+
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     private void onPickup(EntityPickupItemEvent event)
     {
@@ -241,7 +267,6 @@ public class ShowoffItem implements Listener
     //Modifies Map as well, hence why it's not used in chunkUnloadEvent when we iterate through locations.
     private void despawnItem(Location location)
     {
-        PrettySimpleShop.debug("Attempting to check for and remove item at " + location);
         if (spawnedItems.containsKey(location))
         {
             spawnedItems.remove(location).remove();

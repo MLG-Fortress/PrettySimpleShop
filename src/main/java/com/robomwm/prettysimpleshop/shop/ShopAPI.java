@@ -183,6 +183,8 @@ public class ShopAPI
 
     private String getName(Chest chest)
     {
+        if (chest == null)
+            return null;
         if (!(chest.getInventory().getHolder() instanceof DoubleChest))
         {
             return chest.getCustomName();
