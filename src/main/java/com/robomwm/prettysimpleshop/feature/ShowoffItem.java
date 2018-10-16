@@ -173,7 +173,7 @@ public class ShowoffItem implements Listener
     }
 
     //despawn items when a shop chest becomes a doublechest
-    @EventHandler
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     private void onDoubleChest(BlockPlaceEvent event)
     {
         if (!config.isWhitelistedWorld(event.getBlock().getWorld()))
@@ -260,13 +260,13 @@ public class ShowoffItem implements Listener
             item.setCanMobPickup(false);
         }
         catch (Throwable rock){}
-        PrettySimpleShop.debug("Spawned item at " + location);
         return true;
     }
 
     //Modifies Map as well, hence why it's not used in chunkUnloadEvent when we iterate through locations.
     private void despawnItem(Location location)
     {
+        PrettySimpleShop.debug("Checking for item at " + location);
         if (spawnedItems.containsKey(location))
         {
             spawnedItems.remove(location).remove();
