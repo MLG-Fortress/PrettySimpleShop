@@ -202,7 +202,7 @@ public class ShowoffItem implements Listener
     @EventHandler
     private void onShopBreak(ShopBreakEvent event)
     {
-        despawnItem(event.getShopInfo().getLocation());
+        despawnItem(event.getShopInfo().getLocation().add(0.5, 1.2, 0.5));
     }
     @EventHandler
     private void onItemDespawn(ItemDespawnEvent event)
