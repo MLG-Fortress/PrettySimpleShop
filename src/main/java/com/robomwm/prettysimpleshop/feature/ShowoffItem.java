@@ -189,8 +189,8 @@ public class ShowoffItem implements Listener
                 if (!(holder instanceof DoubleChest))
                     return;
                 DoubleChest doubleChest = (DoubleChest)holder;
-                despawnItem(doubleChest.getLeftSide().getInventory().getLocation().add(0.5, 1.2, 0.5));
-                despawnItem(doubleChest.getRightSide().getInventory().getLocation().add(0.5, 1.2, 0.5));
+                despawnItem(((Chest)(doubleChest.getLeftSide())).getLocation().add(0.5, 1.2, 0.5));
+                despawnItem(((Chest)(doubleChest.getLeftSide())).getLocation().add(0.5, 1.2, 0.5));
             }
         }.runTask(plugin);
     }
