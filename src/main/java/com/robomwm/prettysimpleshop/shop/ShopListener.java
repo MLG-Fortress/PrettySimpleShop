@@ -82,6 +82,7 @@ public class ShopListener implements Listener
     private void cleanup(PlayerQuitEvent event)
     {
         selectedShop.remove(event.getPlayer());
+        priceSetter.remove(event.getPlayer());
     }
 
     private boolean isEnabledWorld(World world)
@@ -192,6 +193,7 @@ public class ShopListener implements Listener
     private void onWorldChange(PlayerChangedWorldEvent event)
     {
         selectedShop.remove(event.getPlayer());
+        priceSetter.remove(event.getPlayer());
     }
 
     //Collect revenues
