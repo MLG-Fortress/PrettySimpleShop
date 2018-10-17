@@ -105,12 +105,17 @@ public class ShopListener implements Listener
     }
 
     //Clears any set price the player may have inadvertantly forgotten to remove
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.HIGHEST)
     private void clearSetPrice(PlayerInteractEvent event)
     {
+        if (event.isCancelled())
+        {
+            priceCommand(event.getPlayer(), null);
+            return;
+        }
         if (event.getAction() == Action.PHYSICAL)
             return;
-        if (event.getClickedBlock().getType() == Material.CHEST)
+        if (event.getClickedBlock() != null && event.getClickedBlock().getType() == Material.CHEST)
             return;
         priceCommand(event.getPlayer(), null);
     }
