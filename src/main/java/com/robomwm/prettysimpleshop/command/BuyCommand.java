@@ -151,7 +151,7 @@ public class BuyCommand implements CommandExecutor, Listener
             unconfirmedTransactionMap.remove(player);
         }
 
-        itemStack = shopAPI.performTransaction(shopAPI.getChest(shopInfo.getLocation()), itemStack, shopInfo.getPrice());
+        itemStack = shopAPI.performTransaction(shopAPI.getContainer(shopInfo.getLocation()), itemStack, shopInfo.getPrice());
         if (itemStack == null)
         {
             config.sendMessage(player, "shopModified");

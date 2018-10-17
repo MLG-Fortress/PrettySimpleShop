@@ -1,6 +1,7 @@
 package com.robomwm.prettysimpleshop;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
@@ -29,6 +30,7 @@ public class ConfigManager
     private ConfigurationSection messageSection;
     private ConfigurationSection tipSection;
     private Set<World> whitelistedWorlds = new HashSet<>();
+    private Set<Material> shopBlocks = new HashSet<>();
 
     private Map<Player, String> lastSeenTip = new HashMap<>();
 
@@ -40,11 +42,19 @@ public class ConfigManager
         config.addDefault("useWorldWhitelist", false);
         config.addDefault("confirmTransactions", true);
         config.addDefault("useBuyPrompt", true);
+
         List<String> whitelist = new ArrayList<>();
         whitelist.add("mall");
         config.addDefault("worldWhitelist", whitelist);
 
-         messageSection = config.getConfigurationSection("messages");
+        List<String> shopBlockList = new ArrayList<>();
+        whitelist.add("CHEST");
+        whitelist.add("TRAPPED_CHEST");
+        for (Material material : ExtraTags.SHULKER_BOX.getMaterials())
+            whitelist.add(material.name());
+        config.addDefault("shopBlocks", shopBlockList);
+
+        messageSection = config.getConfigurationSection("messages");
         if (messageSection == null)
             messageSection = config.createSection("messages");
         messageSection.addDefault("shopName", "shop");
@@ -97,6 +107,22 @@ public class ConfigManager
             }
         }
 
+        for (String blockName : config.getStringList("shopBlocks"))
+        {
+            Material material = Material.matchMaterial(blockName);
+            if (material == null)
+                instance.getLogger().warning(blockName + " is not a valid Material name.");
+            else
+                shopBlocks.add(material);
+        }
+
+        config.options().header("showOffItems spawns a display item above each shop.\n" +
+                "confirmTransactions shows the buyer a preview the transaction via a book GUI before committing to the purchase.\n" +
+                "showBuyPrompt prompts the buyer to input the quantity they wish to buy in chat, instead of requiring them to use the /buy command.\n" +
+                "shopBlocks contains blocks you allow to be used as shops. Only blocks that are a Nameable Container can be used as a shop.\n" +
+                "Valid Material names can be found here https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html\n" +
+                "Block types that are Containers are listed as subinterfaces here (some are not Nameable, you can check by clicking the subinterface of interest) https://hub.spigotmc.org/javadocs/spigot/org/bukkit/block/Container.html");
+
         instance.saveConfig();
     }
 
@@ -148,6 +174,11 @@ public class ConfigManager
     public boolean isWhitelistedWorld(World world) //may want to consider returning unmodifiable collection
     {
         return whitelistedWorlds.isEmpty() || whitelistedWorlds.contains(world);
+    }
+
+    public boolean isShopBlock(Material material)
+    {
+        return shopBlocks.contains(material);
     }
 
     /*Utility methods*/

@@ -1,6 +1,5 @@
 package com.robomwm.prettysimpleshop;
 
-import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -8,6 +7,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -50,13 +50,12 @@ public class LazyUtil
             else if (object instanceof String)
                 baseComponents.addAll(Arrays.asList(TextComponent.fromLegacyText((String)object)));
         }
-        return baseComponents.toArray(new BaseComponent[baseComponents.size()]);
+        return baseComponents.toArray(new BaseComponent[0]);
     }
 
     public static List<BaseComponent> addLegacyText(String string, List<BaseComponent> baseComponents)
     {
-        for (BaseComponent baseComponent : TextComponent.fromLegacyText(string))
-            baseComponents.add(baseComponent);
+        Collections.addAll(baseComponents, TextComponent.fromLegacyText(string));
         return baseComponents;
     }
 }

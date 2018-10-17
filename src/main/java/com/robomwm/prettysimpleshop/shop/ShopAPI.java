@@ -5,7 +5,10 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Nameable;
+import org.bukkit.block.BlockState;
 import org.bukkit.block.Chest;
+import org.bukkit.block.Container;
 import org.bukkit.block.DoubleChest;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -37,15 +40,15 @@ public class ShopAPI
      * Returns a copy of the item sold in this shop.
      * The total quantity available is stored in ItemStack#getAmount
      * 
-     * Will return null if !item#isSimilar to another in the chest.
+     * Will return null if !item#isSimilar to another in the container.
      * 
-     * @param chest
-     * @return the item sold, or null if either no item exists or multiple types of items are present in the chest
+     * @param container
+     * @return the item sold, or null if either no item exists or multiple types of items are present in the container
      */
-    public ItemStack getItemStack(Chest chest)
+    public ItemStack getItemStack(Container container)
     {
-        Validate.notNull(chest);
-        Inventory inventory = chest.getInventory();
+        Validate.notNull(container);
+        Inventory inventory = container.getInventory();
         if (inventory == null)
             return null;
         ItemStack item = null;
@@ -63,22 +66,23 @@ public class ShopAPI
         return item;
     }
 
-    public boolean isShop(Chest chest)
+    public boolean isShop(Container container)
     {
-        return isShop(chest, true);
+        return isShop(container, true);
     }
 
-    public boolean isShop(Chest chest, boolean includeNew)
+    public boolean isShop(Container container, boolean includeNew)
     {
-        return isShop(getName(chest), includeNew);
+        return isShopFormat(getName(container), includeNew);
     }
 
-    public boolean isDoubleChest(Chest chest)
+    public boolean isDoubleChest(Container container)
     {
-        return chest.getInventory().getHolder() instanceof DoubleChest;
+        return container.getInventory().getHolder() instanceof DoubleChest;
     }
 
-    private boolean isShop(String theName, boolean includeNew)
+
+    private boolean isShopFormat(String theName, boolean includeNew)
     {
         if (theName == null || theName.isEmpty())
             return false;
@@ -88,12 +92,12 @@ public class ShopAPI
         return name.length == 5 && name[4].startsWith("\u00A7\u00A7");
     }
 
-    public boolean setPrice(Chest chest, double newPrice)
+    public boolean setPrice(Container container, double newPrice)
     {
-        String theName = getName(chest);
+        String theName = getName(container);
         PrettySimpleShop.debug("setPrice:" + theName + ";");
-        //Now any chest can be a shop. May add configuration for this if desired.
-//        if (!isShop(theName, true))
+        //Now any container can be a shop. May add configuration for this if desired.
+//        if (!isShopFormat(theName, true))
 //            return false;
 
         String[] name = null;
@@ -102,23 +106,23 @@ public class ShopAPI
 
 //        PrettySimpleShop.debug("setPrice:" + name.length);
 //        if (name.length == 1 && name[0].equalsIgnoreCase(shopKey))
-//            return setName(chest, priceKey + " " + Double.toString(newPrice) + " " + salesKey + " 0 \u00A7\u00A7");
+//            return setName(container, priceKey + " " + Double.toString(newPrice) + " " + salesKey + " 0 \u00A7\u00A7");
 //        else if (!name[0].equals(priceKey))
 //            return false;
 
         //Shop not named, or named something else (i.e. basically turn it into a shop no matter what)
         if (name == null || !name[0].equals(priceKey))
-            return setName(chest, priceKey + " " + Double.toString(newPrice) + " " + salesKey + " 0 \u00A7\u00A7");
+            return setName(container, priceKey + " " + Double.toString(newPrice) + " " + salesKey + " 0 \u00A7\u00A7");
 
         //Otherwise, just change the price portion of the string
         name[1] = Double.toString(newPrice);
 
-        return setName(chest, StringUtils.join(name, " "));
+        return setName(container, StringUtils.join(name, " "));
     }
 
-    public double getPrice(Chest chest)
+    public double getPrice(Container container)
     {
-        String theName = getName(chest);
+        String theName = getName(container);
         if (theName == null || theName.isEmpty())
             return -1;
         String[] name = theName.split(" ");
@@ -128,9 +132,9 @@ public class ShopAPI
             return Double.parseDouble(name[1]);
     }
 
-    public double getRevenue(Chest chest, boolean reset)
+    public double getRevenue(Container container, boolean reset)
     {
-        String theName = getName(chest);
+        String theName = getName(container);
         double revenue;
         if (theName == null || theName.isEmpty())
             return -1;
@@ -144,7 +148,7 @@ public class ShopAPI
         if (reset)
         {
             name[4] = "\u00A7\u00A7";
-            if (!setName(chest, StringUtils.join(name, " ")))
+            if (!setName(container, StringUtils.join(name, " ")))
                 return 0;
         }
         return revenue;
@@ -161,53 +165,67 @@ public class ShopAPI
         return item1 != null && item1.isSimilar(item2);
     }
 
-    //helper/convenience method
-    public Chest getChest(Location location)
+    /**
+     * If the block at the given location is a nameable container, its state will be returned as a Container.
+     * @param location
+     * @return the block's state as a Container, or null if not a Nameable Container.
+     */
+    public Container getContainer(Location location)
     {
         if (location.getBlock() == null)
             return null;
-        if (!(location.getBlock().getState() instanceof Chest))
+        BlockState state = location.getBlock().getState();
+        if (state instanceof Nameable && state instanceof Container)
+            return (Container)state;
+        return null;
+    }
+
+
+    /**
+     * Returns the location of a shop
+     * DoubleChest conveniently returns the middle between the two chests.
+     * @param container
+     * @return
+     */
+    public Location getLocation(Container container)
+    {
+        if (isDoubleChest(container))
+            return ((DoubleChest)container.getInventory().getHolder()).getLocation();
+        return container.getLocation();
+    }
+
+    private String getName(Container container)
+    {
+        if (!(container instanceof Nameable))
             return null;
-        return (Chest)location.getBlock().getState();
-    }
 
-    //helper method that returns the location of a shop - DoubleChest conveniently returns the middle between the two chests.
-    public Location getLocation(Chest chest)
-    {
-        if (!(chest.getInventory().getHolder() instanceof DoubleChest))
+        if (isDoubleChest(container))
         {
-            return chest.getLocation();
+            DoubleChest doubleChest = (DoubleChest)container.getInventory().getHolder();
+            //Left side takes precedence, but we'll override if the right side is a shop and the left side isn't
+            if (!isShopFormat(((Chest)doubleChest.getLeftSide()).getCustomName(), false) && isShopFormat((((Chest)doubleChest.getRightSide())).getCustomName(), true))
+                return ((Chest)doubleChest.getRightSide()).getCustomName();
+            return ((Chest)doubleChest.getLeftSide()).getCustomName();
         }
-        return ((DoubleChest)chest.getInventory().getHolder()).getLocation();
+
+        return ((Nameable)container).getCustomName();
     }
 
-    private String getName(Chest chest)
+    private boolean setName(Container actualContainer, String name)
     {
-        if (chest == null)
-            return null;
-        if (!(chest.getInventory().getHolder() instanceof DoubleChest))
+        if (!(actualContainer instanceof Nameable))
+            return false;
+        Nameable containerName = (Nameable)actualContainer;
+        if (!isDoubleChest(actualContainer))
         {
-            return chest.getCustomName();
-        }
-        DoubleChest doubleChest = (DoubleChest)chest.getInventory().getHolder();
-        //Left side takes precedence, but we'll override if the right side is a shop and the left side isn't
-        if (!isShop(((Chest)doubleChest.getLeftSide()).getCustomName(), false) && isShop((((Chest)doubleChest.getRightSide())).getCustomName(), true))
-            return ((Chest)doubleChest.getRightSide()).getCustomName();
-        return ((Chest)doubleChest.getLeftSide()).getCustomName();
-    }
-
-    private boolean setName(Chest chest, String name)
-    {
-        if (!isDoubleChest(chest))
-        {
-            chest.setCustomName(name);
-            return chest.update();
+            containerName.setCustomName(name);
+            return actualContainer.update();
         }
         //Thanks Bukkit
-        DoubleChest doubleChest = (DoubleChest)chest.getInventory().getHolder();
-        Chest leftChest = (Chest)((Chest)doubleChest.getLeftSide()).getBlock().getState();
+        DoubleChest doubleChest = (DoubleChest)actualContainer.getInventory().getHolder();
+        Chest leftChest = ((Chest)doubleChest.getLeftSide());
         leftChest.setCustomName(name);
-        Chest rightChest = (Chest)((Chest)doubleChest.getRightSide()).getBlock().getState();
+        Chest rightChest = ((Chest)doubleChest.getRightSide());
         rightChest.setCustomName(name);
         PrettySimpleShop.debug("setName: " + name);
         return leftChest.update() && rightChest.update();
@@ -219,15 +237,15 @@ public class ShopAPI
      * @param price
      * @return amount sold
      */
-    public ItemStack performTransaction(Chest chest, ItemStack item, double price)
+    public ItemStack performTransaction(Container container, ItemStack item, double price)
     {
         //Verify price
-        PrettySimpleShop.debug(Double.toString(getPrice(chest)) + " " + price);
-        if (getPrice(chest) != price)
+        PrettySimpleShop.debug(Double.toString(getPrice(container)) + " " + price);
+        if (getPrice(container) != price)
             return null;
         PrettySimpleShop.debug("price validated");
         //Verify item type
-        ItemStack shopItem = getItemStack(chest);
+        ItemStack shopItem = getItemStack(container);
         if (!isSimilar(item, shopItem))
             return null;
         PrettySimpleShop.debug(shopItem.toString() + item.toString());
@@ -238,16 +256,16 @@ public class ShopAPI
             shopItem.setAmount(item.getAmount());
 
         //Update statistics/revenue first, otherwise will overwrite inventory changes
-        String[] name = getName(chest).split(" ");
+        String[] name = getName(container).split(" ");
         name[3] = Long.toString(Long.valueOf(name[3]) + shopItem.getAmount());
-        double revenue = getRevenue(chest, false);
+        double revenue = getRevenue(container, false);
         PrettySimpleShop.debug("rev" + revenue);
         revenue += shopItem.getAmount() * price;
         name[4] = "\u00A7\u00A7" + Double.toString(revenue);
-        if (!setName(chest, StringUtils.join(name, " ")))
+        if (!setName(container, StringUtils.join(name, " ")))
             return null;
 
-        Inventory inventory = chest.getInventory();
+        Inventory inventory = container.getInventory();
         inventory.removeItem(shopItem);
 
         return shopItem;

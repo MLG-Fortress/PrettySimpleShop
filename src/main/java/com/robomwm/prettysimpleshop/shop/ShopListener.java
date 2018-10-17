@@ -12,10 +12,10 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.milkbowl.vault.economy.Economy;
-import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
+import org.bukkit.block.Container;
 import org.bukkit.block.DoubleChest;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -115,14 +115,14 @@ public class ShopListener implements Listener
         }
         if (event.getAction() == Action.PHYSICAL)
             return;
-        if (event.getClickedBlock() != null && event.getClickedBlock().getType() == Material.CHEST)
+        if (event.getClickedBlock() != null && config.isShopBlock(event.getClickedBlock().getType()))
             return;
         priceCommand(event.getPlayer(), null);
     }
 
     public boolean selectShop(Player player, Block block, boolean wantToBuy)
     {
-        if (block.getType() != Material.CHEST)
+        if (!config.isShopBlock(block.getType()))
             return false;
         Chest chest = (Chest)block.getState();
         if (!shopAPI.isShop(chest))
@@ -205,8 +205,8 @@ public class ShopListener implements Listener
         if (!(event.getInventory().getHolder() instanceof Chest || event.getInventory().getHolder() instanceof DoubleChest))
             return;
         Player player = (Player)event.getPlayer();
-        Chest chest = shopAPI.getChest(event.getInventory().getLocation());
-//        if (!shopAPI.isShop(chest))
+        Container container = shopAPI.getContainer(event.getInventory().getLocation());
+//        if (!shopAPI.isShop(container))
 //        {
 //            if (priceSetter.remove(player) != null)
 //                config.sendMessage(player, "setPriceCanceled");
@@ -216,17 +216,17 @@ public class ShopListener implements Listener
         if (priceSetter.containsKey(player))
         {
             double newPrice = priceSetter.remove(player);
-            shopAPI.setPrice(chest, newPrice);
+            shopAPI.setPrice(container, newPrice);
             config.sendMessage(player, "priceApplied", economy.format(newPrice));
-            instance.getServer().getPluginManager().callEvent(new ShopPricedEvent(player, chest.getLocation(), newPrice));
+            instance.getServer().getPluginManager().callEvent(new ShopPricedEvent(player, container.getLocation(), newPrice));
         }
 
-        if (!shopAPI.isShop(chest))
+        if (!shopAPI.isShop(container))
             return;
 
-        instance.getServer().getPluginManager().callEvent(new ShopOpenCloseEvent(player, new ShopInfo(shopAPI.getLocation(chest), shopAPI.getItemStack(chest), shopAPI.getPrice(chest)), true));
+        instance.getServer().getPluginManager().callEvent(new ShopOpenCloseEvent(player, new ShopInfo(shopAPI.getLocation(container), shopAPI.getItemStack(container), shopAPI.getPrice(container)), true));
 
-        double deposit = shopAPI.getRevenue(chest, true);
+        double deposit = shopAPI.getRevenue(container, true);
         if (deposit <= 0)
             return;
         economy.depositPlayer(player, deposit);
@@ -236,7 +236,7 @@ public class ShopListener implements Listener
     private void onBreakShop(BlockBreakEvent event)
     {
         Block block = event.getBlock();
-        if (block.getType() != Material.CHEST)
+        if (!config.isShopBlock(block.getType()))
             return;
         Chest chest = (Chest)block.getState();
         if (!shopAPI.isShop(chest))
@@ -261,10 +261,10 @@ public class ShopListener implements Listener
         if (!(event.getInventory().getHolder() instanceof Chest || event.getInventory().getHolder() instanceof DoubleChest))
             return;
         Player player = (Player)event.getPlayer();
-        Chest chest = shopAPI.getChest(event.getInventory().getLocation());
-        if (!shopAPI.isShop(chest))
+        Container container = shopAPI.getContainer(event.getInventory().getLocation());
+        if (!shopAPI.isShop(container))
             return;
-        instance.getServer().getPluginManager().callEvent(new ShopOpenCloseEvent(player, new ShopInfo(shopAPI.getLocation(chest), shopAPI.getItemStack(chest), shopAPI.getPrice(chest)), false));
+        instance.getServer().getPluginManager().callEvent(new ShopOpenCloseEvent(player, new ShopInfo(shopAPI.getLocation(container), shopAPI.getItemStack(container), shopAPI.getPrice(container)), false));
     }
 
     //For now we'll just prevent explosions. Might consider dropping stored revenue on explosion later.
@@ -275,7 +275,7 @@ public class ShopListener implements Listener
         while (blockIterator.hasNext())
         {
             Block block = blockIterator.next();
-            if (block.getType() != Material.CHEST)
+            if (!config.isShopBlock(block.getType()))
                 continue;
             if (shopAPI.isShop((Chest)block.getState()))
                 blockIterator.remove();
@@ -288,7 +288,7 @@ public class ShopListener implements Listener
         while (blockIterator.hasNext())
         {
             Block block = blockIterator.next();
-            if (block.getType() != Material.CHEST)
+            if (!config.isShopBlock(block.getType()))
                 continue;
             if (shopAPI.isShop((Chest)block.getState()))
                 blockIterator.remove();
@@ -309,6 +309,4 @@ public class ShopListener implements Listener
         priceSetter.put(player, price);
         config.sendMessage(player, "applyPrice");
     }
-
-
 }

@@ -11,9 +11,9 @@ import com.robomwm.prettysimpleshop.shop.ShopInfo;
 import org.bukkit.Chunk;
 import org.bukkit.ChunkSnapshot;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Chest;
+import org.bukkit.block.Container;
 import org.bukkit.block.DoubleChest;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
@@ -111,7 +111,7 @@ public class ShowoffItem implements Listener
                     {
                         for (int y = 0; y < 256; y++)
                         {
-                            if (chunkSnapshot.getBlockType(x, y, z) == Material.CHEST)
+                            if (config.isShopBlock(chunkSnapshot.getBlockType(x, y, z)))
                             {
                                 blocksToCheck.add(new Location(chunk.getWorld(), x + (chunk.getX() * 16), y, z + (chunk.getZ() * 16)));
                             }
@@ -129,13 +129,13 @@ public class ShowoffItem implements Listener
                         {
                             if (!location.getChunk().isLoaded())
                                 return;
-                            Chest chest = shopAPI.getChest(location);
-                            if (chest == null || !shopAPI.isShop(chest, false))
+                            Container container = shopAPI.getContainer(location);
+                            if (container == null || !shopAPI.isShop(container, false))
                                 continue;
-                            ItemStack item = shopAPI.getItemStack(chest);
+                            ItemStack item = shopAPI.getItemStack(container);
                             if (item == null)
                                 continue;
-                            if (spawnItem(new ShopInfo(shopAPI.getLocation(chest), item, plugin.getShopAPI().getPrice(chest))))
+                            if (spawnItem(new ShopInfo(shopAPI.getLocation(container), item, plugin.getShopAPI().getPrice(container))))
                                 noShops = false; //Shops exist in this chunk
                         }
                         if (noShops)
@@ -178,7 +178,7 @@ public class ShowoffItem implements Listener
     {
         if (!config.isWhitelistedWorld(event.getBlock().getWorld()))
             return;
-        if (event.getBlock().getType() != Material.CHEST)
+        if (!config.isShopBlock(event.getBlock().getType()))
             return;
         new BukkitRunnable()
         {
