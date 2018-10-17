@@ -48,10 +48,10 @@ public class ConfigManager
         config.addDefault("worldWhitelist", whitelist);
 
         List<String> shopBlockList = new ArrayList<>();
-        whitelist.add("CHEST");
-        whitelist.add("TRAPPED_CHEST");
+        shopBlockList.add("CHEST");
+        shopBlockList.add("TRAPPED_CHEST");
         for (Material material : ExtraTags.SHULKER_BOX.getMaterials())
-            whitelist.add(material.name());
+            shopBlockList.add(material.name());
         config.addDefault("shopBlocks", shopBlockList);
 
         messageSection = config.getConfigurationSection("messages");
