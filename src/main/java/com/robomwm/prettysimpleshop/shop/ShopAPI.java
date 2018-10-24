@@ -89,7 +89,7 @@ public class ShopAPI
         String[] name = theName.split(" ");
         if (name.length == 1 && name[0].equalsIgnoreCase(shopKey) && includeNew) //new shop
             return true;
-        return name.length == 5 && name[4].startsWith("\u00A7\u00A7");
+        return name.length == 5 && name[4].startsWith("\u00A7\u00A7"); //could also check price and sales keyword too
     }
 
     public boolean setPrice(Container container, double newPrice)
@@ -139,7 +139,7 @@ public class ShopAPI
         if (theName == null || theName.isEmpty())
             return -1;
         String[] name = theName.split(" ");
-        PrettySimpleShop.debug(String.join(" ", name));
+        PrettySimpleShop.debug("getRevenue:" + String.join(" ", name));
         if (name.length < 5 || name[4].length() < 2 || !name[4].substring(0, 2).equals("\u00A7\u00A7"))
             return -1;
         if (name[4].length() < 3)
@@ -218,6 +218,7 @@ public class ShopAPI
         Nameable containerName = (Nameable)actualContainer;
         if (!isDoubleChest(actualContainer))
         {
+            PrettySimpleShop.debug("setName: " + name);
             containerName.setCustomName(name);
             return actualContainer.update();
         }
