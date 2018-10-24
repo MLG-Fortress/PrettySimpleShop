@@ -123,6 +123,15 @@ public class ConfigManager
                 "Valid Material names can be found here https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html\n" +
                 "Block types that are Containers are listed as subinterfaces here (some are not Nameable, you can check by clicking the subinterface of interest) https://hub.spigotmc.org/javadocs/spigot/org/bukkit/block/Container.html");
 
+        //Spigot-4441
+        //Basically, getting a block's/item's custom name will not return the reset color code.
+        if (getString("shopName").contains(ChatColor.RESET.toString()))
+            messageSection.set("shopName", messageSection.getString("shopName").replaceAll("(?i)&r", "&0"));
+        if (getString("price").contains(ChatColor.RESET.toString()))
+            messageSection.set("price", messageSection.getString("price").replaceAll("(?i)&r", "&0"));
+        if (getString("sales").contains(ChatColor.RESET.toString()))
+            messageSection.set("sales", messageSection.getString("sales").replaceAll("(?i)&r", "&0"));
+
         instance.saveConfig();
     }
 

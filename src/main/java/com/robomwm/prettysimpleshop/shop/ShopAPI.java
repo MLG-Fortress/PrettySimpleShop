@@ -126,10 +126,6 @@ public class ShopAPI
         if (theName == null || theName.isEmpty())
             return -1;
         String[] name = theName.split(" ");
-        PrettySimpleShop.debug(theName);
-        PrettySimpleShop.debug(name.length);
-        PrettySimpleShop.debug(name[0]);
-        PrettySimpleShop.debug(name[1]);
         if (name.length < 2 || !name[0].equals(priceKey))
             return -1;
         else
