@@ -14,9 +14,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.block.Chest;
 import org.bukkit.block.Container;
-import org.bukkit.block.DoubleChest;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -125,11 +123,11 @@ public class ShopListener implements Listener
     {
         if (!config.isShopBlock(block.getType()))
             return false;
-        Chest chest = (Chest)block.getState();
-        if (!shopAPI.isShop(chest))
+        Container container = (Container)block.getState();
+        if (!shopAPI.isShop(container))
             return false;
-        ItemStack item = shopAPI.getItemStack(chest);
-        double price = shopAPI.getPrice(chest);
+        ItemStack item = shopAPI.getItemStack(container);
+        double price = shopAPI.getPrice(container);
 
         if (price < 0)
         {
@@ -143,7 +141,7 @@ public class ShopListener implements Listener
             return true;
         }
 
-        ShopInfo shopInfo = new ShopInfo(shopAPI.getLocation(chest), item, price);
+        ShopInfo shopInfo = new ShopInfo(shopAPI.getLocation(container), item, price);
 
         ShopSelectEvent shopSelectEvent = new ShopSelectEvent(player, shopInfo, shopInfo.equals(selectedShop.get(player)) || wantToBuy);
 
@@ -174,8 +172,8 @@ public class ShopListener implements Listener
         TextComponent text = new TextComponent(textToSend);
         text.setHoverEvent(hover);
         text.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/buy " +
-                chest.getLocation().getWorld().getName() + " " + chest.getLocation().getX() + " " +
-                chest.getLocation().getBlockY() + " " + chest.getLocation().getBlockZ()));
+                container.getLocation().getWorld().getName() + " " + container.getLocation().getX() + " " +
+                container.getLocation().getBlockY() + " " + container.getLocation().getBlockZ()));
         player.spigot().sendMessage(text);
         shopInfo.setHoverableText(text);
         config.sendTip(player, "saleInfo");
@@ -204,10 +202,10 @@ public class ShopListener implements Listener
             return;
         if (event.getInventory().getLocation() == null)
             return;
-        if (!(event.getInventory().getHolder() instanceof Chest || event.getInventory().getHolder() instanceof DoubleChest))
-            return;
         Player player = (Player)event.getPlayer();
         Container container = shopAPI.getContainer(event.getInventory().getLocation());
+        if (container == null)
+            return;
 //        if (!shopAPI.isShop(container))
 //        {
 //            if (priceSetter.remove(player) != null)
@@ -240,11 +238,11 @@ public class ShopListener implements Listener
         Block block = event.getBlock();
         if (!config.isShopBlock(block.getType()))
             return;
-        Chest chest = (Chest)block.getState();
-        if (!shopAPI.isShop(chest))
+        Container container = (Container)block.getState();
+        if (!shopAPI.isShop(container))
             return;
-        instance.getServer().getPluginManager().callEvent(new ShopBreakEvent(event.getPlayer(), new ShopInfo(shopAPI.getLocation(chest), shopAPI.getItemStack(chest), shopAPI.getPrice(chest))));
-        double deposit = shopAPI.getRevenue(chest, true);
+        instance.getServer().getPluginManager().callEvent(new ShopBreakEvent(event.getPlayer(), new ShopInfo(shopAPI.getLocation(container), shopAPI.getItemStack(container), shopAPI.getPrice(container))));
+        double deposit = shopAPI.getRevenue(container, true);
         if (deposit <= 0)
             return;
         Player player = event.getPlayer();
@@ -260,10 +258,10 @@ public class ShopListener implements Listener
             return;
         if (event.getInventory().getLocation() == null)
             return;
-        if (!(event.getInventory().getHolder() instanceof Chest || event.getInventory().getHolder() instanceof DoubleChest))
-            return;
         Player player = (Player)event.getPlayer();
         Container container = shopAPI.getContainer(event.getInventory().getLocation());
+        if (container == null)
+            return;
         if (!shopAPI.isShop(container))
             return;
         instance.getServer().getPluginManager().callEvent(new ShopOpenCloseEvent(player, new ShopInfo(shopAPI.getLocation(container), shopAPI.getItemStack(container), shopAPI.getPrice(container)), false));
@@ -279,7 +277,7 @@ public class ShopListener implements Listener
             Block block = blockIterator.next();
             if (!config.isShopBlock(block.getType()))
                 continue;
-            if (shopAPI.isShop((Chest)block.getState()))
+            if (shopAPI.isShop((Container)block.getState()))
                 blockIterator.remove();
         }
     }
@@ -292,7 +290,7 @@ public class ShopListener implements Listener
             Block block = blockIterator.next();
             if (!config.isShopBlock(block.getType()))
                 continue;
-            if (shopAPI.isShop((Chest)block.getState()))
+            if (shopAPI.isShop((Container)block.getState()))
                 blockIterator.remove();
         }
     }
