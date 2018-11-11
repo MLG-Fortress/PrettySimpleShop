@@ -15,6 +15,7 @@ commands:
     usage: /setprice <price> - Sets the price per item of a shop. Set to 0 to give away items for free, or set to -1 to disable the shop.
   buy:
     usage: /buy <quantity> - Attempts to buy <quantity> amount from the selected shop (select a shop via left-clicking its chest).
+    aliases: [shopbuy, buyshop, simpleshopbuy, prettysimpleshopbuy, sbuy, pbuy, psbuy, pssbuy]
   shop:
     usage: Create a shop with /setprice. See /buy to buy from a shop.
     aliases: [simpleshop, prettysimpleshop, pshop, psshop, sshop]

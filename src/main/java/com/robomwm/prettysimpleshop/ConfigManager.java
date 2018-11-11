@@ -84,6 +84,7 @@ public class ConfigManager
                 "Use /buy to buy from a shop.");
         messageSection.addDefault("Confirm", "&2[Confirm]");
         messageSection.addDefault("Cancel", "&4[Cancel]");
+        messageSection.addDefault("buyCommandForConfirmationBook", "/buy");
 
         tipSection = config.getConfigurationSection("tips");
         if (tipSection == null)

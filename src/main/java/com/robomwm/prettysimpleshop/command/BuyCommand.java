@@ -229,8 +229,8 @@ class UnconfirmedTransaction
         bookMeta.spigot().addPage(LazyUtil.buildPage(Integer.toString(amount) + " " , shopInfo.getHoverableText(),
                 "\n\n", config.getString("TotalCost", economy.format(amount * shopInfo.getPrice())),
                 "\n\n", config.getString("currentBalanceAndCost", economy.format(economy.getBalance(player)), economy.format( economy.getBalance(player) - amount * shopInfo.getPrice())),
-                "\n\n", LazyUtil.getClickableCommand(config.getString("Confirm"), "/buy " + amount + " confirm"),
-                " ", LazyUtil.getClickableCommand(config.getString("Cancel"), "/buy cancel")));
+                "\n\n", LazyUtil.getClickableCommand(config.getString("Confirm"), config.getString("buyCommandForConfirmationBook") + " " + amount + " confirm"),
+                " ", LazyUtil.getClickableCommand(config.getString("Cancel"), config.getString("buyCommandForConfirmationBook") + " cancel")));
 
         book.setItemMeta(bookMeta);
         bookUtil.openBook(player, book);
