@@ -12,7 +12,6 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.milkbowl.vault.economy.Economy;
-
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Container;
@@ -201,12 +200,14 @@ public class ShopListener implements Listener
     {
         if (event.getPlayer().getType() != EntityType.PLAYER)
             return;
-        try {
-        	if (event.getInventory().getLocation() == null)
-        		return;
+        //Try needed because of a spigot bug which throwes a NullPointerException
+        try
+        {
+            if (event.getInventory().getLocation() == null)
+                return;
         }
         catch (NullPointerException e) {
-        	return;
+            return;
         }
         Player player = (Player)event.getPlayer();
         Container container = shopAPI.getContainer(event.getInventory().getLocation());
@@ -262,12 +263,15 @@ public class ShopListener implements Listener
     {
         if (event.getPlayer().getType() != EntityType.PLAYER)
             return;
-        try {
-        	if (event.getInventory().getLocation() == null)
-        		return;
+        //Try needed because of a spigot bug which throwes a NullPointerException
+        try
+        {
+            if (event.getInventory().getLocation() == null)
+                return;
         }
-        catch (NullPointerException e) {
-        	return;
+        catch (NullPointerException e)
+        {
+            return;
         }
         Player player = (Player)event.getPlayer();
         Container container = shopAPI.getContainer(event.getInventory().getLocation());
