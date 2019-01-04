@@ -185,7 +185,7 @@ public class ShowoffItem implements Listener
             @Override
             public void run()
             {
-                InventoryHolder holder = ((Chest)event.getBlock().getState()).getInventory().getHolder();
+                InventoryHolder holder = ((Container)event.getBlock().getState()).getInventory().getHolder();
                 if (!(holder instanceof DoubleChest))
                     return;
                 DoubleChest doubleChest = (DoubleChest)holder;
