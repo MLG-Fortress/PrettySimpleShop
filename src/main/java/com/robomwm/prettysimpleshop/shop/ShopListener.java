@@ -207,6 +207,9 @@ public class ShopListener implements Listener
                 return;
         }
         catch (NullPointerException e) {
+            instance.getLogger().warning("A NPE was thrown when attempting to retireve the inventory's location. This is a bug that must be reported and fixed in the server software.\nI.e. This is a Spigot bug. See https://github.com/MLG-Fortress/PrettySimpleShop/pull/7 for more details.");
+            e.printStackTrace();
+            instance.getLogger().warning("A NPE was thrown when attempting to retireve the inventory's location. This is a bug that must be reported and fixed in the server software.\nI.e. This is a Spigot bug. See https://github.com/MLG-Fortress/PrettySimpleShop/pull/7 for more details.");
             return;
         }
         Player player = (Player)event.getPlayer();
@@ -263,7 +266,7 @@ public class ShopListener implements Listener
     {
         if (event.getPlayer().getType() != EntityType.PLAYER)
             return;
-        //Try needed because of a spigot bug which throwes a NullPointerException
+
         try
         {
             if (event.getInventory().getLocation() == null)
@@ -271,6 +274,9 @@ public class ShopListener implements Listener
         }
         catch (NullPointerException e)
         {
+            instance.getLogger().warning("A NPE was thrown when attempting to retireve the inventory's location. This is a bug that must be reported and fixed in the server software.\nI.e. This is a Spigot bug. See https://github.com/MLG-Fortress/PrettySimpleShop/pull/7 for more details.");
+            e.printStackTrace();
+            instance.getLogger().warning("A NPE was thrown when attempting to retireve the inventory's location. This is a bug that must be reported and fixed in the server software.\nI.e. This is a Spigot bug. See https://github.com/MLG-Fortress/PrettySimpleShop/pull/7 for more details.");
             return;
         }
         Player player = (Player)event.getPlayer();
