@@ -200,8 +200,18 @@ public class ShopListener implements Listener
     {
         if (event.getPlayer().getType() != EntityType.PLAYER)
             return;
-        if (event.getInventory().getLocation() == null)
+        //Try needed because of a spigot bug which throwes a NullPointerException
+        try
+        {
+            if (event.getInventory().getLocation() == null)
+                return;
+        }
+        catch (NullPointerException e) {
+            instance.getLogger().warning("A NPE was thrown when attempting to retireve the inventory's location. This is a bug that must be reported and fixed in the server software.\nI.e. This is a Spigot bug. See https://github.com/MLG-Fortress/PrettySimpleShop/pull/7 for more details.");
+            e.printStackTrace();
+            instance.getLogger().warning("A NPE was thrown when attempting to retireve the inventory's location. This is a bug that must be reported and fixed in the server software.\nI.e. This is a Spigot bug. See https://github.com/MLG-Fortress/PrettySimpleShop/pull/7 for more details.");
             return;
+        }
         Player player = (Player)event.getPlayer();
         Container container = shopAPI.getContainer(event.getInventory().getLocation());
         if (container == null)
@@ -256,8 +266,19 @@ public class ShopListener implements Listener
     {
         if (event.getPlayer().getType() != EntityType.PLAYER)
             return;
-        if (event.getInventory().getLocation() == null)
+
+        try
+        {
+            if (event.getInventory().getLocation() == null)
+                return;
+        }
+        catch (NullPointerException e)
+        {
+            instance.getLogger().warning("A NPE was thrown when attempting to retireve the inventory's location. This is a bug that must be reported and fixed in the server software.\nI.e. This is a Spigot bug. See https://github.com/MLG-Fortress/PrettySimpleShop/pull/7 for more details.");
+            e.printStackTrace();
+            instance.getLogger().warning("A NPE was thrown when attempting to retireve the inventory's location. This is a bug that must be reported and fixed in the server software.\nI.e. This is a Spigot bug. See https://github.com/MLG-Fortress/PrettySimpleShop/pull/7 for more details.");
             return;
+        }
         Player player = (Player)event.getPlayer();
         Container container = shopAPI.getContainer(event.getInventory().getLocation());
         if (container == null)
