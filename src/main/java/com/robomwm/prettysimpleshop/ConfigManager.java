@@ -80,8 +80,11 @@ public class ConfigManager
         messageSection.addDefault("buyPrompt", "&dPrettySimpleShop: &rHow many {0} &rwould you like to buy?");
         messageSection.addDefault("TotalCost", "for a total cost of {0}");
         messageSection.addDefault("currentBalanceAndCost", "You have {0} and will have {1} after confirming.");
-        messageSection.addDefault("shopCommand", "To create a shop, put items of the same type in a chest, and use /setprice to set the price per item.\n" +
-                "Use /buy to buy from a shop.");
+        messageSection.addDefault("shopCommand", "Selling:\nTo create a shop, put items of the same type in a chest, and use /setprice to set the price per item.\n" +
+                "Make sure your shop is protected from access or destruction to prevent theft!\n" +
+                "Buying:\n" +
+                "Punch a shop to view the item. Hover over it in chat for item details.\n" +
+                "Click the message, /buy, or double-punch a shop to buy from a shop\n");
         messageSection.addDefault("Confirm", "&2[Confirm]");
         messageSection.addDefault("Cancel", "&4[Cancel]");
         messageSection.addDefault("buyCommandForConfirmationBook", "/buy");
