@@ -22,7 +22,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
-import pw.valaria.bookutil.BookUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,7 +38,6 @@ public class BuyCommand implements CommandExecutor, Listener
     private ShopAPI shopAPI;
     private Economy economy;
     private Map<Player, UnconfirmedTransaction> unconfirmedTransactionMap = new HashMap<>();
-    private BookUtil bookUtil;
 
     public BuyCommand(PrettySimpleShop plugin, ShopListener shopListener, Economy economy)
     {
@@ -47,15 +45,6 @@ public class BuyCommand implements CommandExecutor, Listener
         this.config = plugin.getConfigManager();
         this.shopAPI = plugin.getShopAPI();
         this.economy = economy;
-        try
-        {
-            this.bookUtil = new BookUtil(plugin);
-        }
-        catch (Exception e)
-        {
-            plugin.getLogger().warning("BookUtil failed to instantiate. Transaction confirmation will be disabled.");
-            e.printStackTrace();
-        }
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
@@ -140,12 +129,12 @@ public class BuyCommand implements CommandExecutor, Listener
             config.sendMessage(player, "noSpace");
         }
 
-        if (config.getBoolean("confirmTransactions") && bookUtil != null)
+        if (config.getBoolean("confirmTransactions"))
         {
             if (!confirm && (!unconfirmedTransactionMap.containsKey(player)
                     || !unconfirmedTransactionMap.remove(player).matches(shopInfo, amount)))
             {
-                unconfirmedTransactionMap.put(player, new UnconfirmedTransaction(player, shopInfo, amount, config, economy, bookUtil));
+                unconfirmedTransactionMap.put(player, new UnconfirmedTransaction(player, shopInfo, amount, config, economy));
                 return true;
             }
             unconfirmedTransactionMap.remove(player);
@@ -220,7 +209,7 @@ class UnconfirmedTransaction
     private ShopInfo shopInfo;
     private int amount;
 
-    UnconfirmedTransaction(Player player, ShopInfo shopInfo, int amount, ConfigManager config, Economy economy, BookUtil bookUtil)
+    UnconfirmedTransaction(Player player, ShopInfo shopInfo, int amount, ConfigManager config, Economy economy)
     {
         this.shopInfo = shopInfo;
         this.amount = amount;
@@ -233,7 +222,7 @@ class UnconfirmedTransaction
                 " ", LazyUtil.getClickableCommand(config.getString("Cancel"), config.getString("buyCommandForConfirmationBook") + " cancel")));
 
         book.setItemMeta(bookMeta);
-        bookUtil.openBook(player, book);
+        player.openBook(book);
     }
 
     public boolean matches(ShopInfo shopInfo, int amount)
