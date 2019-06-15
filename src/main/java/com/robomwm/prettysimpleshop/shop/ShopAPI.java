@@ -234,11 +234,11 @@ public class ShopAPI
 
     /**
      * Removes items from the shop - performs the transaction
-     * @param item
+     * @param requestedItem
      * @param price
      * @return amount sold
      */
-    public ItemStack performTransaction(Container container, ItemStack item, double price)
+    public ItemStack performTransaction(Container container, ItemStack requestedItem, double price)
     {
         //Verify price
         PrettySimpleShop.debug(Double.toString(getPrice(container)) + " " + price);
@@ -247,14 +247,15 @@ public class ShopAPI
         PrettySimpleShop.debug("price validated");
         //Verify item type
         ItemStack shopItem = getItemStack(container);
-        if (!isSimilar(item, shopItem))
+        if (!isSimilar(requestedItem, shopItem))
             return null;
-        PrettySimpleShop.debug(shopItem.toString() + item.toString());
+        PrettySimpleShop.debug(shopItem.toString() + requestedItem.toString());
         PrettySimpleShop.debug("item validated");
         //Verify stock - cap to max stock remaining
         //We use and return the shopItem since this is already a cloned ItemStack (instead of also cloning item)
-        if (item.getAmount() < shopItem.getAmount())
-            shopItem.setAmount(item.getAmount());
+        //(This is why we're modifying `shopItem` to the request amount, unless it is larger.
+        if (requestedItem.getAmount() < shopItem.getAmount())
+            shopItem.setAmount(requestedItem.getAmount());
 
         //Update statistics/revenue first, otherwise will overwrite inventory changes
         String[] name = getName(container).split(" ");
