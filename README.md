@@ -1,3 +1,5 @@
+Project page + downloads: https://dev.bukkit.org/projects/prettysimpleshop
+
 # PrettySimpleShop
 A pretty simple shop plugin. No signs required. Supports DoubleChests and claim protections!
 
