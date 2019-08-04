@@ -53,4 +53,4 @@ A pretty simple shop plugin. No signs required. Supports DoubleChests and claim 
 - Nearly every message is configurable.
 - Chests named "shop" (or whatever you have set in the config) will help prompt players to create a shop with that chest. Useful if you "sell" shops to players.
 
-[**Having problems or issues?❓ Click here for help!💡**](../../issues) | [Support me c:](https://r.robomwm.com/patreon) | [Source code](../../)
+[**Having problems or issues?❓ Click here for help!💡**](../../issues) | [Support the developer c:](https://r.robomwm.com/patreon) | [Source code](../../)
