@@ -42,6 +42,7 @@ public class ConfigManager
         config.addDefault("useWorldWhitelist", false);
         config.addDefault("confirmTransactions", true);
         config.addDefault("useBuyPrompt", true);
+        config.addDefault("alwaysShowBuyPrompt", true);
 
         List<String> whitelist = new ArrayList<>();
         whitelist.add("mall");

@@ -89,7 +89,7 @@ public class BuyCommand implements CommandExecutor, Listener
 
         try
         {
-            quantity = Integer.valueOf(args[0]);
+            quantity = Integer.parseInt(args[0]);
         }
         catch (Throwable rock)
         {

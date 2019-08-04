@@ -98,7 +98,7 @@ public class ShopListener implements Listener
             return;
         if (!isEnabledWorld(event.getPlayer().getWorld()))
             return;
-        selectShop(player, event.getClickedBlock(), false);
+        selectShop(player, event.getClickedBlock(), config.getBoolean("alwaysShowBuyPrompt"));
     }
 
     //Select shop if interact with shop block is denied
@@ -112,7 +112,7 @@ public class ShopListener implements Listener
             return;
         if (!isEnabledWorld(event.getPlayer().getWorld()))
             return;
-        selectShop(player, event.getClickedBlock(), false);
+        selectShop(player, event.getClickedBlock(), config.getBoolean("alwaysShowBuyPrompt"));
     }
 
     //Clears any set price the player may have inadvertently forgotten to remove
