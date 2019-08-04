@@ -3,7 +3,7 @@ Project page + downloads: https://dev.bukkit.org/projects/prettysimpleshop
 # PrettySimpleShop
 A pretty simple shop plugin. No signs required. Supports DoubleChests and claim protections!
 
-[**Having problems or issues?❓ Click here for help!💡**](../../issues) | [Support me c:](https://r.robomwm.com/patreon) | [Source code](../../)
+[**Having problems or issues?❓ Click here for help!💡**](../../issues) | [Support the developer c:](https://r.robomwm.com/patreon) | [Source code](../../)
 
 ## Getting started
 - To make a shop:
