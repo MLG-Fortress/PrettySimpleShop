@@ -12,11 +12,17 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 
-import java.util.Queue;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+
 
 /**
  * Created on 8/4/2019.
@@ -29,6 +35,8 @@ public class ActionBarItemDetails implements Listener
     private ShopAPI shopAPI;
     private ConfigManager config;
     private Economy economy;
+    private BlockingQueue<Player> playersToCheck = new LinkedBlockingQueue<>();
+    private Map<Player, BukkitTask> activeActionBars = new HashMap<>();
 
     public ActionBarItemDetails(PrettySimpleShop plugin, ShopAPI shopAPI, Economy economy)
     {
@@ -47,12 +55,57 @@ public class ActionBarItemDetails implements Listener
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
         this.shopAPI = shopAPI;
         this.economy = economy;
+
+        new BukkitRunnable()
+        {
+            @Override
+            public void run()
+            {
+                while (true)
+                {
+                    Player player;
+                    try
+                    {
+                        player = playersToCheck.take();
+                    }
+                    catch (InterruptedException e)
+                    {
+                        e.printStackTrace();
+                        continue;
+                    }
+
+                    if (activeActionBars.containsKey(player))
+                        activeActionBars.remove(player).cancel();
+
+                    activeActionBars.put(player, new BukkitRunnable()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            if (!player.isOnline())
+                            {
+                                activeActionBars.remove(player);
+                                cancel();
+                                return;
+                            }
+                            sendShopDetails(player);
+                        }
+                    }.runTaskTimer(plugin, 1L, 30L));
+                }
+            }
+        }.runTaskAsynchronously(plugin);
     }
 
     @EventHandler(ignoreCancelled = true)
     public void onPlayerMove(PlayerMoveEvent event)
     {
-        sendShopDetails(event.getPlayer());
+        playersToCheck.add(event.getPlayer());
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onPlayerQuit(PlayerQuitEvent event)
+    {
+        playersToCheck.remove(event.getPlayer());
     }
 
     public boolean sendShopDetails(Player player)
