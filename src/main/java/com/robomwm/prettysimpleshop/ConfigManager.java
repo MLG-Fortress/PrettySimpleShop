@@ -39,6 +39,7 @@ public class ConfigManager
         instance = plugin;
         config = instance.getConfig();
         config.addDefault("showOffItems", true);
+        config.addDefault("showItemDetailsInActionBar", true);
         config.addDefault("useWorldWhitelist", false);
         config.addDefault("confirmTransactions", true);
         config.addDefault("useBuyPrompt", true);

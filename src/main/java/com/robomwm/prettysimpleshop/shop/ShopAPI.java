@@ -1,17 +1,21 @@
 package com.robomwm.prettysimpleshop.shop;
 
+import com.robomwm.prettysimpleshop.ConfigManager;
 import com.robomwm.prettysimpleshop.PrettySimpleShop;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Nameable;
+import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Chest;
 import org.bukkit.block.Container;
 import org.bukkit.block.DoubleChest;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.List;
 
 /**
  * Created on 2/6/2018.
@@ -28,12 +32,14 @@ public class ShopAPI
     private String shopKey;
     private String priceKey;
     private String salesKey;
+    private ConfigManager config;
 
-    public ShopAPI(String shopKey, String priceKey, String salesKey)
+    public ShopAPI(String shopKey, String priceKey, String salesKey, ConfigManager config)
     {
         this.shopKey = shopKey;
         this.priceKey = priceKey;
         this.salesKey = salesKey;
+        this.config = config;
     }
 
     /**
@@ -49,8 +55,6 @@ public class ShopAPI
     {
         Validate.notNull(container);
         Inventory inventory = container.getInventory();
-        if (inventory == null)
-            return null;
         ItemStack item = null;
         for (ItemStack itemStack : inventory)
         {
@@ -74,6 +78,16 @@ public class ShopAPI
     public boolean isShop(Container container, boolean includeNew)
     {
         return isShopFormat(getName(container), includeNew);
+    }
+
+    public boolean isShop(Block block, boolean includeNew)
+    {
+        if (block == null)
+            return false;
+        if (!config.isShopBlock((block.getType())))
+            return false;
+        Container container = (Container)block.getState();
+        return isShop(container, includeNew);
     }
 
     public boolean isDoubleChest(Container container)
@@ -172,10 +186,9 @@ public class ShopAPI
      */
     public Container getContainer(Location location)
     {
-        if (location.getBlock() == null)
-            return null;
+        location.getBlock();
         BlockState state = location.getBlock().getState();
-        if (state instanceof Nameable && state instanceof Container)
+        if (state instanceof Container)
             return (Container)state;
         return null;
     }
@@ -196,7 +209,7 @@ public class ShopAPI
 
     private String getName(Container container)
     {
-        if (!(container instanceof Nameable))
+        if (container == null)
             return null;
 
         if (isDoubleChest(container))
@@ -208,18 +221,17 @@ public class ShopAPI
             return ((Chest)doubleChest.getLeftSide()).getCustomName();
         }
 
-        return ((Nameable)container).getCustomName();
+        return container.getCustomName();
     }
 
     private boolean setName(Container actualContainer, String name)
     {
-        if (!(actualContainer instanceof Nameable))
+        if (actualContainer == null)
             return false;
-        Nameable containerName = (Nameable)actualContainer;
         if (!isDoubleChest(actualContainer))
         {
             PrettySimpleShop.debug("setName: " + name);
-            containerName.setCustomName(name);
+            actualContainer.setCustomName(name);
             return actualContainer.update();
         }
         //Thanks Bukkit
