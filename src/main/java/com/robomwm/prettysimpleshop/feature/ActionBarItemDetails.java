@@ -9,19 +9,16 @@ import net.milkbowl.vault.economy.Economy;
 import org.bukkit.block.Block;
 import org.bukkit.block.Container;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.Queue;
 
 
 /**
@@ -35,8 +32,6 @@ public class ActionBarItemDetails implements Listener
     private ShopAPI shopAPI;
     private ConfigManager config;
     private Economy economy;
-    private BlockingQueue<Player> playersToCheck = new LinkedBlockingQueue<>();
-    private Map<Player, BukkitTask> activeActionBars = new HashMap<>();
 
     public ActionBarItemDetails(PrettySimpleShop plugin, ShopAPI shopAPI, Economy economy)
     {
@@ -61,49 +56,12 @@ public class ActionBarItemDetails implements Listener
             @Override
             public void run()
             {
-                while (true)
+                for (Player player : plugin.getServer().getOnlinePlayers())
                 {
-                    Player player;
-                    try
-                    {
-                        player = playersToCheck.take();
-                    }
-                    catch (InterruptedException e)
-                    {
-                        e.printStackTrace();
-                        continue;
-                    }
-
-                    if (activeActionBars.containsKey(player))
-                        activeActionBars.remove(player).cancel();
-
-                    activeActionBars.put(player, new BukkitRunnable()
-                    {
-                        @Override
-                        public void run()
-                        {
-                            if (!player.isOnline() || !sendShopDetails(player))
-                            {
-                                activeActionBars.remove(player);
-                                cancel();
-                            }
-                        }
-                    }.runTaskTimer(plugin, 1L, 2L));
+                    sendShopDetails(player);
                 }
             }
-        }.runTaskAsynchronously(plugin);
-    }
-
-    @EventHandler(ignoreCancelled = true)
-    public void onPlayerMove(PlayerMoveEvent event)
-    {
-        playersToCheck.add(event.getPlayer());
-    }
-
-    @EventHandler(ignoreCancelled = true)
-    public void onPlayerQuit(PlayerQuitEvent event)
-    {
-        playersToCheck.remove(event.getPlayer());
+        }.runTaskTimer(plugin, 5L, 5L);
     }
 
     public boolean sendShopDetails(Player player)
