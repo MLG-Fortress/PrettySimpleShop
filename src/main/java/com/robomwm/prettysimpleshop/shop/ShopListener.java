@@ -17,6 +17,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Container;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -97,17 +98,28 @@ public class ShopListener implements Listener
             return;
         if (!isEnabledWorld(event.getPlayer().getWorld()))
             return;
-
-        Block block = event.getClickedBlock();
-
-        selectShop(player, block, false);
+        selectShop(player, event.getClickedBlock(), false);
     }
 
-    //Clears any set price the player may have inadvertantly forgotten to remove
+    //Select shop if interact with shop block is denied
+    @EventHandler(priority = EventPriority.MONITOR)
+    private void onRightClickChest(PlayerInteractEvent event)
+    {
+        Player player = event.getPlayer();
+        if (event.useInteractedBlock() != Event.Result.DENY)
+            return;
+        if (event.getAction() != Action.RIGHT_CLICK_BLOCK)
+            return;
+        if (!isEnabledWorld(event.getPlayer().getWorld()))
+            return;
+        selectShop(player, event.getClickedBlock(), false);
+    }
+
+    //Clears any set price the player may have inadvertently forgotten to remove
     @EventHandler(priority = EventPriority.HIGHEST)
     private void clearSetPrice(PlayerInteractEvent event)
     {
-        if (event.isCancelled())
+        if (event.useInteractedBlock() == Event.Result.DENY)
         {
             priceCommand(event.getPlayer(), null);
             return;
