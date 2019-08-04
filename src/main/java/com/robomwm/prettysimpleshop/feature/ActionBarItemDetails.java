@@ -82,15 +82,13 @@ public class ActionBarItemDetails implements Listener
                         @Override
                         public void run()
                         {
-                            if (!player.isOnline())
+                            if (!player.isOnline() || !sendShopDetails(player))
                             {
                                 activeActionBars.remove(player);
                                 cancel();
-                                return;
                             }
-                            sendShopDetails(player);
                         }
-                    }.runTaskTimer(plugin, 1L, 30L));
+                    }.runTaskTimer(plugin, 1L, 2L));
                 }
             }
         }.runTaskAsynchronously(plugin);
