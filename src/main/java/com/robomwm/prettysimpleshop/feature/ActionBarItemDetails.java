@@ -69,7 +69,7 @@ public class ActionBarItemDetails implements Listener
         if (!config.isWhitelistedWorld(player.getWorld()))
             return false;
 
-        Block block = player.getTargetBlock(7);
+        Block block = player.getTargetBlockExact(7);
 
         if (!shopAPI.isShop(block, false))
             return false;
