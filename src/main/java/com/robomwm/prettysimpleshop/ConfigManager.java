@@ -53,6 +53,7 @@ public class ConfigManager
         List<String> shopBlockList = new ArrayList<>();
         shopBlockList.add("CHEST");
         shopBlockList.add("TRAPPED_CHEST");
+        shopBlockList.add("BARREL");
         for (Material material : ExtraTags.SHULKER_BOX.getMaterials())
             shopBlockList.add(material.name());
         config.addDefault("shopBlocks", shopBlockList);
