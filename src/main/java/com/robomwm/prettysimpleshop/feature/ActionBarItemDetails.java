@@ -41,7 +41,7 @@ public class ActionBarItemDetails implements Listener
         }
         catch (Throwable rock)
         {
-            plugin.getLogger().warning("The blah blah feature requires at least spigot or paper.");
+            plugin.getLogger().warning("The showItemDetailsInActionBar feature requires at least spigot or paper.");
             return;
         }
 

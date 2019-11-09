@@ -263,7 +263,7 @@ public class ShopListener implements Listener
         Container container = (Container)block.getState();
         if (!shopAPI.isShop(container))
             return;
-        instance.getServer().getPluginManager().callEvent(new ShopBreakEvent(event.getPlayer(), new ShopInfo(shopAPI.getLocation(container), shopAPI.getItemStack(container), shopAPI.getPrice(container))));
+        instance.getServer().getPluginManager().callEvent(new ShopBreakEvent(event.getPlayer(), new ShopInfo(shopAPI.getLocation(container), shopAPI.getItemStack(container), shopAPI.getPrice(container)), event));
         double deposit = shopAPI.getRevenue(container, true);
         if (deposit <= 0)
             return;

@@ -40,6 +40,7 @@ public class ConfigManager
         config = instance.getConfig();
         config.addDefault("showOffItems", true);
         config.addDefault("showItemDetailsInActionBar", true);
+        config.addDefault("deleteShopWhenBroken", false);
         config.addDefault("useWorldWhitelist", false);
         config.addDefault("confirmTransactions", true);
         config.addDefault("useBuyPrompt", true);
