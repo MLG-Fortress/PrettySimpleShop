@@ -3,9 +3,11 @@ package com.robomwm.prettysimpleshop.feature;
 import com.robomwm.prettysimpleshop.PrettySimpleShop;
 import com.robomwm.prettysimpleshop.event.ShopBreakEvent;
 import com.robomwm.prettysimpleshop.shop.ShopAPI;
+import org.bukkit.Location;
 import org.bukkit.Nameable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.inventory.ItemStack;
 
 /**
  * Created on 11/9/2019.
@@ -25,8 +27,8 @@ public class DestroyShopOnBreak implements Listener
     @EventHandler(ignoreCancelled = true)
     private void onShopBreak(ShopBreakEvent event)
     {
-        Nameable nameable = (Nameable)event.getBaseEvent().getBlock().getState();
-        nameable.setCustomName(null);
-        event.getBaseEvent().getBlock().getState().update();
+        Location location = event.getBaseEvent().getBlock().getLocation();
+        location.getWorld().dropItemNaturally(location, new ItemStack(event.getBaseEvent().getBlock().getType()));
+        event.getBaseEvent().setDropItems(false);
     }
 }
