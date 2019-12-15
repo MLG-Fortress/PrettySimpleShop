@@ -159,7 +159,9 @@ public class ShowoffItem implements Listener
             Location location = locations.next();
             if (location.getChunk() == event.getChunk())
             {
-                spawnedItems.get(location).remove();
+                Item item = spawnedItems.get(location);
+                item.remove();
+                item.removeMetadata("NO_PICKUP", plugin);
                 locations.remove();
             }
         }
@@ -167,8 +169,10 @@ public class ShowoffItem implements Listener
         //Cleanup dropped items that may have been moved away from the chunk they spawned at
         for (Entity entity : event.getChunk().getEntities())
         {
-            if (entity.getType() == EntityType.DROPPED_ITEM && entity.hasMetadata("NO_PICKUP"))
+            if (entity.getType() == EntityType.DROPPED_ITEM && entity.hasMetadata("NO_PICKUP")) {
                 entity.remove();
+                entity.removeMetadata("NO_PICKUP", plugin);
+            }
         }
     }
 
@@ -269,7 +273,9 @@ public class ShowoffItem implements Listener
         PrettySimpleShop.debug("Checking for item at " + location);
         if (spawnedItems.containsKey(location))
         {
-            spawnedItems.remove(location).remove();
+            Item item = spawnedItems.remove(location);
+            item.remove();
+            item.removeMetadata("NO_PICKUP", plugin);
             PrettySimpleShop.debug("removed item at " + location);
         }
     }
@@ -295,8 +301,10 @@ public class ShowoffItem implements Listener
 
     public void despawnAll()
     {
-        for (Item item : spawnedItems.values())
+        for (Item item : spawnedItems.values()) {
             item.remove();
+            item.removeMetadata("NO_PICKUP", plugin);
+        }
         spawnedItems.clear();
     }
 }
