@@ -80,7 +80,7 @@ public class ShowoffItem implements Listener
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     private void onChunkLoad(ChunkLoadEvent event)
     {
         if (!config.isWhitelistedWorld(event.getWorld()))
@@ -125,8 +125,9 @@ public class ShowoffItem implements Listener
                         boolean noShops = true;
                         for (Location location : blocksToCheck)
                         {
-                            if (!location.getWorld().isChunkLoaded(location.getBlockX() >> 4, location.getBlockZ() >> 4))
+                            if (!location.getWorld().isChunkLoaded(location.getBlockX() >> 4, location.getBlockZ() >> 4)) {
                                 return;
+                            }
                             Container container = shopAPI.getContainer(location);
                             if (container == null || !shopAPI.isShop(container, false))
                                 continue;
