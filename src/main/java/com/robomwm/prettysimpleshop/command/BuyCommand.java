@@ -154,7 +154,7 @@ public class BuyCommand implements CommandExecutor, Listener
         shopInfo = new ShopInfo(shopInfo, itemStack.getAmount());
         player.getServer().getPluginManager().callEvent(new ShopBoughtEvent(player, shopInfo));
 
-        int rows = ((itemStack.getAmount() / itemStack.getMaxStackSize()) + 1) / 9 + 1;
+        int rows = Math.min(((itemStack.getAmount() / itemStack.getMaxStackSize()) + 1) / 9 + 1, 54);
         ShopInventoryHolder shopInventoryHolder = new ShopInventoryHolder();
         Inventory inventory = player.getServer().createInventory(shopInventoryHolder,
                 rows * 9,

@@ -8,10 +8,7 @@ import com.robomwm.prettysimpleshop.event.ShopOpenCloseEvent;
 import com.robomwm.prettysimpleshop.event.ShopSelectEvent;
 import com.robomwm.prettysimpleshop.shop.ShopAPI;
 import com.robomwm.prettysimpleshop.shop.ShopInfo;
-import org.bukkit.Chunk;
-import org.bukkit.ChunkSnapshot;
-import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Chest;
 import org.bukkit.block.Container;
 import org.bukkit.block.DoubleChest;
@@ -25,6 +22,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.ItemDespawnEvent;
+import org.bukkit.event.entity.ItemMergeEvent;
 import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.world.ChunkLoadEvent;
@@ -82,7 +80,7 @@ public class ShowoffItem implements Listener
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     private void onChunkLoad(ChunkLoadEvent event)
     {
         if (!config.isWhitelistedWorld(event.getWorld()))
@@ -127,16 +125,18 @@ public class ShowoffItem implements Listener
                         boolean noShops = true;
                         for (Location location : blocksToCheck)
                         {
-                            if (!location.getWorld().isChunkLoaded(location.getBlockX() >> 4, location.getBlockZ() >> 4))
+                            if (!location.getWorld().isChunkLoaded(location.getBlockX() >> 4, location.getBlockZ() >> 4)) {
                                 return;
+                            }
                             Container container = shopAPI.getContainer(location);
                             if (container == null || !shopAPI.isShop(container, false))
                                 continue;
                             ItemStack item = shopAPI.getItemStack(container);
                             if (item == null)
                                 continue;
-                            if (spawnItem(new ShopInfo(shopAPI.getLocation(container), item, plugin.getShopAPI().getPrice(container))))
+                            if (spawnItem(new ShopInfo(shopAPI.getLocation(container), item, shopAPI.getPrice(container)))) {
                                 noShops = false; //Shops exist in this chunk
+                            }
                         }
                         if (noShops)
                             removeCachedChunk(chunk);
@@ -146,7 +146,7 @@ public class ShowoffItem implements Listener
         }.runTaskAsynchronously(plugin);
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     private void onChunkUnload(ChunkUnloadEvent event)
     {
         if (!config.isWhitelistedWorld(event.getWorld()))
@@ -157,7 +157,7 @@ public class ShowoffItem implements Listener
         while (locations.hasNext()) //can optimize later via mapping chunks if needed
         {
             Location location = locations.next();
-            if (location.getChunk() == event.getChunk())
+            if (location.getBlockX() >> 4 == event.getChunk().getX() && location.getBlockZ() >> 4 == event.getChunk().getZ())
             {
                 Item item = spawnedItems.get(location);
                 item.remove();
@@ -184,19 +184,23 @@ public class ShowoffItem implements Listener
             return;
         if (!config.isShopBlock(event.getBlock().getType()))
             return;
-        new BukkitRunnable()
-        {
+
+        if(event.getBlockPlaced().getType() != Material.CHEST && event.getBlockPlaced().getType() != Material.TRAPPED_CHEST)
+            return;
+
+        new BukkitRunnable() {
             @Override
-            public void run()
-            {
-                InventoryHolder holder = ((Container)event.getBlock().getState()).getInventory().getHolder();
+            public void run() {
+                Container container = shopAPI.getContainer(event.getBlock().getLocation());
+                InventoryHolder holder = container.getInventory().getHolder();
                 if (!(holder instanceof DoubleChest))
                     return;
                 DoubleChest doubleChest = (DoubleChest)holder;
                 despawnItem(((Chest)(doubleChest.getLeftSide())).getLocation().add(0.5, 1.2, 0.5));
-                despawnItem(((Chest)(doubleChest.getLeftSide())).getLocation().add(0.5, 1.2, 0.5));
+                despawnItem(((Chest)(doubleChest.getRightSide())).getLocation().add(0.5, 1.2, 0.5));
+                spawnItem(new ShopInfo(shopAPI.getLocation(container), shopAPI.getItemStack(container), shopAPI.getPrice(container)));
             }
-        }.runTask(plugin);
+        }.runTaskLater(plugin, 1L);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
@@ -233,9 +237,37 @@ public class ShowoffItem implements Listener
     private void onShopBreak(ShopBreakEvent event)
     {
         despawnItem(event.getShopInfo().getLocation().add(0.5, 1.2, 0.5));
+        Container container = shopAPI.getContainer(event.getShopInfo().getLocation());
+        InventoryHolder holder = container.getInventory().getHolder();
+        if (!(holder instanceof DoubleChest)) {
+            return;
+        }
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                spawnItem(new ShopInfo(shopAPI.getLocation(container), shopAPI.getItemStack(container), shopAPI.getPrice(container)));
+            }
+        }.runTaskLater(plugin, 1L);
     }
     @EventHandler
     private void onItemDespawn(ItemDespawnEvent event)
+    {
+        if (event.getEntity().hasMetadata("NO_PICKUP")){
+            event.setCancelled(true);
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    despawnItem(event.getEntity().getLocation());
+                    Container container = shopAPI.getContainer(event.getLocation().subtract(0,0.5,0));
+                    if(container != null) {
+                        spawnItem(new ShopInfo(shopAPI.getLocation(container), shopAPI.getItemStack(container), shopAPI.getPrice(container)));
+                    }
+                }
+            }.runTaskLater(plugin, 1L);
+        }
+    }
+    @EventHandler
+    private void onItemMerge(ItemMergeEvent event)
     {
         if (event.getEntity().hasMetadata("NO_PICKUP"))
             event.setCancelled(true);
@@ -256,7 +288,7 @@ public class ShowoffItem implements Listener
         item.setCustomName(name);
         item.setCustomNameVisible(true);
         item.setVelocity(new Vector(0, 0.01, 0));
-        item.setMetadata("NO_PICKUP", new FixedMetadataValue(plugin, this));
+        item.setMetadata("NO_PICKUP", new FixedMetadataValue(plugin, "NO_PICKUP"));
         spawnedItems.put(location, item);
         cacheChunk(location.getChunk());
         try //spigot compat (switch to Paper!)
