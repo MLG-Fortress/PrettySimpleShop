@@ -196,6 +196,9 @@ public class ShowoffItem implements Listener
             @Override
             public void run() {
                 Container container = shopAPI.getContainer(event.getBlock().getLocation());
+                if(!shopAPI.isShop(container)){
+                    return;
+                }
                 InventoryHolder holder = container.getInventory().getHolder();
                 if (!(holder instanceof DoubleChest))
                     return;
