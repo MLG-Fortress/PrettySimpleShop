@@ -27,6 +27,7 @@ public class ConfigManager
     private JavaPlugin instance;
     private FileConfiguration config;
     private boolean debug;
+    private ConfigurationSection showOffItemsFeatureSection;
     private ConfigurationSection messageSection;
     private ConfigurationSection tipSection;
     private Set<World> whitelistedWorlds = new HashSet<>();
@@ -38,7 +39,13 @@ public class ConfigManager
     {
         instance = plugin;
         config = instance.getConfig();
-        config.addDefault("showOffItems", true);
+
+        showOffItemsFeatureSection = config.getConfigurationSection("showOffItemsFeature");
+        if (showOffItemsFeatureSection == null)
+            showOffItemsFeatureSection = config.createSection("showOffItemsFeature");
+        showOffItemsFeatureSection.addDefault("enabled", true);
+        showOffItemsFeatureSection.addDefault("showItemsName", true);
+
         config.addDefault("showItemDetailsInActionBar", true);
         config.addDefault("deleteShopWhenBroken", false);
         config.addDefault("useWorldWhitelist", false);

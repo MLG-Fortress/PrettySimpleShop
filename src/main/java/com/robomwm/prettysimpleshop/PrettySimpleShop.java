@@ -78,8 +78,8 @@ public class PrettySimpleShop extends JavaPlugin
                     return;
                 }
                 ShopListener shopListener = new ShopListener(plugin, shopAPI, economy, config);
-                if (config.getBoolean("showOffItems"))
-                    showoffItem = new ShowoffItem(plugin, shopAPI);
+                if (config.getBoolean("showOffItemsFeature.enabled"))
+                    showoffItem = new ShowoffItem(plugin, shopAPI, config.getBoolean("showOffItemsFeature.showItemsName"));
                 if (config.getBoolean("showItemDetailsInActionBar"))
                     new ActionBarItemDetails(plugin, shopAPI, economy);
                 if (config.getBoolean("deleteShopWhenBroken"))
