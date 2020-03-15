@@ -22,7 +22,7 @@ A pretty simple shop plugin. No signs required. Supports DoubleChests and claim 
   - Only players who can open the shop can change its price, collect revenue, and create new shops in that area.
   - All players are able to buy from a shop regardless of area protections.
 
-> <EmpathyHeals> no sign formats to type, no commands to buy, respects protection plugins, can sell custom items, nice holographic displays, keeps a history of sales, it's nearly perfect
+> `<EmpathyHeals>` no sign formats to type, no commands to buy, respects protection plugins, can sell custom items, nice holographic displays, keeps a history of sales, it's nearly perfect
 
 ![](https://i.imgur.com/j15bGIw.png)
 ![](https://i.imgur.com/Y2M8sZO.png)
