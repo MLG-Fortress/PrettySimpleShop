@@ -246,6 +246,10 @@ public class ShopAPI
 
     /**
      * Removes items from the shop - performs the transaction
+     *
+     * There may be a demand for a "dry run" transaction to see what the result would be before actually executing it
+     * Such a thing would also be useful to verify if items can be delivered, and cancel (instead of attempting to reverse) the transaction if the delivery is expected to fail.
+     *
      * @param requestedItem
      * @param price
      * @return amount sold
