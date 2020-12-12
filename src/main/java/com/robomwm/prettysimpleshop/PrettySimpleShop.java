@@ -38,7 +38,7 @@ public class PrettySimpleShop extends JavaPlugin
         shopAPI = new ShopAPI(config.getString("shopName"), config.getString("price"), config.getString("sales"), config);
         try
         {
-            Metrics metrics = new Metrics(this);
+            Metrics metrics = new Metrics(this, 3383);
             metrics.addCustomChart(new Metrics.SimplePie("bukkit_implementation", new Callable<String>()
             {
                 @Override
