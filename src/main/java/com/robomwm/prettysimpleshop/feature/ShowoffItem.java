@@ -56,13 +56,15 @@ public class ShowoffItem implements Listener
     private File cacheFile;
     private Map<Location, Item> spawnedItems = new HashMap<>();
     private ConfigManager config;
+    private boolean showItemName;
 
-    public ShowoffItem(PrettySimpleShop plugin, ShopAPI shopAPI)
+    public ShowoffItem(PrettySimpleShop plugin, ShopAPI shopAPI, boolean showItemName)
     {
         this.plugin = plugin;
         config = plugin.getConfigManager();
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
         this.shopAPI = shopAPI;
+        this.showItemName = showItemName;
         cacheFile = new File(plugin.getDataFolder(), "chunksContainingShops.data");
         cache = YamlConfiguration.loadConfiguration(cacheFile);
         for (World world : plugin.getServer().getWorlds())
@@ -248,13 +250,16 @@ public class ShowoffItem implements Listener
         despawnItem(location);
         if (itemStack == null)
             return false;
-        String name = PrettySimpleShop.getItemName(itemStack); //TODO: make configurable
         itemStack.setAmount(1);
         itemStack.getItemMeta().setDisplayName(String.valueOf(ThreadLocalRandom.current().nextInt())); //Prevents merging (idea from SCS) though metadata might be sufficient? Though we could also just use the ItemMergeEvent too but this is probably simpler and more performant.
         Item item = location.getWorld().dropItem(location, itemStack);
         item.setPickupDelay(Integer.MAX_VALUE);
-        item.setCustomName(name);
-        item.setCustomNameVisible(true);
+        if (showItemName)
+        {
+            String name = PrettySimpleShop.getItemName(itemStack); //TODO: make configurable
+            item.setCustomName(name);
+            item.setCustomNameVisible(true);
+        }
         item.setVelocity(new Vector(0, 0.01, 0));
         item.setMetadata("NO_PICKUP", new FixedMetadataValue(plugin, this));
         spawnedItems.put(location, item);
