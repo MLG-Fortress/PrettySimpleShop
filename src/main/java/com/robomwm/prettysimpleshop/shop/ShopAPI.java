@@ -186,7 +186,6 @@ public class ShopAPI
      */
     public Container getContainer(Location location)
     {
-        location.getBlock();
         BlockState state = location.getBlock().getState();
         if (state instanceof Container)
             return (Container)state;
