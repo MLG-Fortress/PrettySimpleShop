@@ -161,7 +161,7 @@ public class ShopListener implements Listener
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
             rock.printStackTrace(pw);
-            PrettySimpleShop.debug(pw.toString());
+            PrettySimpleShop.debug(sw.toString());
 
             player.sendMessage(textToSend);
             instance.getServer().getPluginManager().callEvent(shopSelectEvent);
