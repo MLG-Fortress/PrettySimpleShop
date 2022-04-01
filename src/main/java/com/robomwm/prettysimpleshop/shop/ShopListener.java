@@ -152,7 +152,7 @@ public class ShopListener implements Listener
         item.setAmount(1);
         try
         {
-            json = new Gson().toJson(item); //Apparently getting NBT isn't needed anymore? https://www.spigotmc.org/threads/itemstack-to-json.394695/#post-3545075
+            json = item.toString();
         }
         catch (Throwable rock)
         {
