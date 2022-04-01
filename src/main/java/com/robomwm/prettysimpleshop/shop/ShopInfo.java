@@ -24,6 +24,8 @@ public class ShopInfo
         this.location = location;
         this.item = item;
         this.price = price;
+        this.hoverableText = new TextComponent();
+        this.hoverableText.setText(getItemName());
     }
 
     public ShopInfo(ShopInfo shopInfo, int amount)
