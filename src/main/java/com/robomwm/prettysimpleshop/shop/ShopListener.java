@@ -55,6 +55,10 @@ public class ShopListener implements Listener
     private Map<Player, Double> priceSetter = new HashMap<>();
     private ConfigManager config;
 
+    private Method asNMSCopy; //CraftItemStack#asNMSCopy(ItemStack);
+    private Method saveNMSItemStack; //n.m.s.ItemStack#save(compound);
+    private Class<?> NBTTagCompoundClazz; //n.m.s.NBTTagCompound;
+
     public ShopListener(JavaPlugin plugin, ShopAPI shopAPI, Economy economy, ConfigManager configManager)
     {
         instance = plugin;
@@ -62,6 +66,21 @@ public class ShopListener implements Listener
         this.shopAPI = shopAPI;
         this.config = configManager;
         this.economy = economy;
+
+        try
+        {
+            asNMSCopy = ReflectionHandler.getMethod("CraftItemStack", ReflectionHandler.PackageType.CRAFTBUKKIT_INVENTORY, "asNMSCopy", ItemStack.class);
+            NBTTagCompoundClazz = ReflectionHandler.PackageType.MINECRAFT_SERVER.getClass("NBTTagCompound");
+            saveNMSItemStack = ReflectionHandler.getMethod("ItemStack", ReflectionHandler.PackageType.MINECRAFT_SERVER, "save", NBTTagCompoundClazz);
+        }
+        catch (Exception e)
+        {
+            instance.getLogger().warning("Reflection failed, will use legacy, non-hoverable, boring text.");
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
+            PrettySimpleShop.debug(sw.toString());
+        }
     }
 
     @EventHandler
@@ -152,7 +171,10 @@ public class ShopListener implements Listener
         item.setAmount(1);
         try
         {
-            json = item.toString();
+            Object nmsItemStack = asNMSCopy.invoke(null, item); //CraftItemStack#asNMSCopy(itemStack); //nms version of the ItemStack
+            Object nbtTagCompound = NBTTagCompoundClazz.newInstance(); //new NBTTagCompoundClazz(); //get a new NBTTagCompound, which will contain the nmsItemStack.
+            nbtTagCompound = saveNMSItemStack.invoke(nmsItemStack, nbtTagCompound); //nmsItemStack#save(nbtTagCompound); //saves nmsItemStack into our new NBTTagCompound
+            json = nbtTagCompound.toString();
         }
         catch (Throwable rock)
         {
