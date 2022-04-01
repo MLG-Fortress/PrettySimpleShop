@@ -34,6 +34,8 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -144,6 +146,7 @@ public class ShopListener implements Listener
 
         selectedShop.put(player, shopInfo);
 
+        //Refactor: put this in the ShopInfo constructor instead
         String textToSend = config.getString("saleInfo", PrettySimpleShop.getItemName(item), economy.format(price), Integer.toString(item.getAmount()));
         String json;
         item.setAmount(1);
@@ -153,6 +156,13 @@ public class ShopListener implements Listener
         }
         catch (Throwable rock)
         {
+            //print stacktrace in debug
+            //https://howtodoinjava.com/java/string/convert-stacktrace-to-string/
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            rock.printStackTrace(pw);
+            PrettySimpleShop.debug(pw.toString());
+
             player.sendMessage(textToSend);
             instance.getServer().getPluginManager().callEvent(shopSelectEvent);
             return true;
