@@ -353,8 +353,8 @@ public final class ReflectionHandler
      * @since 1.0
      */
     public enum PackageType {
-        MINECRAFT_SERVER("net.minecraft.server."),
-        CRAFTBUKKIT("org.bukkit.craftbukkit."),
+        MINECRAFT_SERVER("net.minecraft.server"),
+        CRAFTBUKKIT("org.bukkit.craftbukkit"),
         CRAFTBUKKIT_BLOCK(CRAFTBUKKIT, "block"),
         CRAFTBUKKIT_CHUNKIO(CRAFTBUKKIT, "chunkio"),
         CRAFTBUKKIT_COMMAND(CRAFTBUKKIT, "command"),
