@@ -70,7 +70,7 @@ public class ShopListener implements Listener
         try
         {
             asNMSCopy = ReflectionHandler.getMethod("CraftItemStack", ReflectionHandler.PackageType.CRAFTBUKKIT_INVENTORY, "asNMSCopy", ItemStack.class);
-            NBTTagCompoundClazz = ReflectionHandler.PackageType.MINECRAFT_SERVER.getClass("NBTTagCompound");
+            NBTTagCompoundClazz = ReflectionHandler.PackageType.MINECRAFT_SERVER.getClass("nbt.NBTTagCompound");
             saveNMSItemStack = ReflectionHandler.getMethod("ItemStack", ReflectionHandler.PackageType.MINECRAFT_SERVER, "save", NBTTagCompoundClazz);
         }
         catch (Exception e)
