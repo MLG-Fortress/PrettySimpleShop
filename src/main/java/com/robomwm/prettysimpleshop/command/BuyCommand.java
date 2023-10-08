@@ -160,7 +160,7 @@ public class BuyCommand implements CommandExecutor, Listener
         int rows = (slots + 8) / 9;
         ShopInventoryHolder shopInventoryHolder = new ShopInventoryHolder();
         Inventory inventory = player.getServer().createInventory(shopInventoryHolder,
-                rows * 9,
+                Math.min(rows * 9, 54),
                 config.getString("transactionCompletedWindow", Integer.toString(itemStack.getAmount()), PrettySimpleShop.getItemName(itemStack), economy.format(itemStack.getAmount() * shopInfo.getPrice())));
         inventory.setMaxStackSize(itemStack.getMaxStackSize());
         inventory.addItem(itemStack); //Note: mutates the itemstack's amount
