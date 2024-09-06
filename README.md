@@ -3,7 +3,7 @@ Project page + downloads: https://dev.bukkit.org/projects/prettysimpleshop
 # PrettySimpleShop
 A pretty simple shop plugin. No signs required. Supports DoubleChests and claim protections!
 
-[**Having problems or issues?❓ Click here for help!💡**](../../issues) | [Support the developer c:](https://r.robomwm.com/patreon) | [Source code](../../)
+[🐛Issue Tracker](../../issues) | 👍[Support the developer](https://r.robomwm.com/patreon) | 📃[Source code](../../)
 
 ## Getting started
 - To make a shop:
@@ -55,4 +55,11 @@ A pretty simple shop plugin. No signs required. Supports DoubleChests and claim 
 - Nearly every message is configurable.
 - Chests named "shop" (or whatever you have set in the config) will help prompt players to create a shop with that chest. Useful if you "sell" shops to players.
 
-[**Having problems or issues?❓ Click here for help!💡**](../../issues) | [Support the developer c:](https://r.robomwm.com/patreon) | [Source code](../../)
+### Pretty Simple Sponsors
+SurfHosting: 50% discount with code "Robo": <a href="https://billing.surfhosting.co/aff.php?aff=82" target="_blank">https://billing.surfhosting.co/aff.php?aff=82</a>
+
+<a href="https://billing.surfhosting.co/aff.php?aff=82" target="_blank"><img src="https://i.imgur.com/a0Nl6uH.png" alt="" width="506" height="77" /></a></p>
+
+---
+
+[Found a bug? Having issues?❓🤔 **Check the Issue Tracker! 💡**](../../issues)
