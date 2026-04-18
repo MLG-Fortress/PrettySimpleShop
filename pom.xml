@@ -9,8 +9,8 @@
     <version>1.8.0</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.release>17</maven.compiler.release>
+        <purpur.version>26.1.2.build.2570-experimental</purpur.version>
     </properties>
     <repositories>
         <repository>
@@ -90,7 +90,7 @@
         <dependency>
             <groupId>org.purpurmc.purpur</groupId>
             <artifactId>purpur-api</artifactId>
-            <version>1.18.2-R0.1-SNAPSHOT</version>
+            <version>${purpur.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

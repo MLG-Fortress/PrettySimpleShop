@@ -1,9 +1,7 @@
 package com.robomwm.prettysimpleshop.shop;
 
-import com.google.gson.Gson;
 import com.robomwm.prettysimpleshop.ConfigManager;
 import com.robomwm.prettysimpleshop.PrettySimpleShop;
-import com.robomwm.prettysimpleshop.ReflectionHandler;
 import com.robomwm.prettysimpleshop.event.ShopBreakEvent;
 import com.robomwm.prettysimpleshop.event.ShopOpenCloseEvent;
 import com.robomwm.prettysimpleshop.event.ShopPricedEvent;
@@ -11,7 +9,9 @@ import com.robomwm.prettysimpleshop.event.ShopSelectEvent;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.ItemTag;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.hover.content.Item;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -32,11 +32,11 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -55,10 +55,6 @@ public class ShopListener implements Listener
     private Map<Player, Double> priceSetter = new HashMap<>();
     private ConfigManager config;
 
-    private Method asNMSCopy; //CraftItemStack#asNMSCopy(ItemStack);
-    private Method saveNMSItemStack; //n.m.s.ItemStack#save(compound);
-    private Class<?> NBTTagCompoundClazz; //n.m.s.NBTTagCompound;
-
     public ShopListener(JavaPlugin plugin, ShopAPI shopAPI, Economy economy, ConfigManager configManager)
     {
         instance = plugin;
@@ -66,21 +62,6 @@ public class ShopListener implements Listener
         this.shopAPI = shopAPI;
         this.config = configManager;
         this.economy = economy;
-
-        try
-        {
-            asNMSCopy = ReflectionHandler.getMethod("CraftItemStack", ReflectionHandler.PackageType.CRAFTBUKKIT_INVENTORY, "asNMSCopy", ItemStack.class);
-            NBTTagCompoundClazz = ReflectionHandler.PackageType.MINECRAFT.getClass("nbt.NBTTagCompound");
-            saveNMSItemStack = ReflectionHandler.getMethod("world.item.ItemStack", ReflectionHandler.PackageType.MINECRAFT, "save", NBTTagCompoundClazz);
-        }
-        catch (Exception e)
-        {
-            instance.getLogger().warning("Reflection failed, will use legacy, non-hoverable, boring text.");
-            StringWriter sw = new StringWriter();
-            PrintWriter pw = new PrintWriter(sw);
-            e.printStackTrace(pw);
-            PrettySimpleShop.debug(sw.toString());
-        }
     }
 
     @EventHandler
@@ -167,44 +148,55 @@ public class ShopListener implements Listener
 
         //Refactor: put this in the ShopInfo constructor instead
         String textToSend = config.getString("saleInfo", PrettySimpleShop.getItemName(item), economy.format(price), Integer.toString(item.getAmount()));
-        String json;
-        item.setAmount(1);
         try
         {
-            Object nmsItemStack = asNMSCopy.invoke(null, item); //CraftItemStack#asNMSCopy(itemStack); //nms version of the ItemStack
-            Object nbtTagCompound = NBTTagCompoundClazz.newInstance(); //new NBTTagCompoundClazz(); //get a new NBTTagCompound, which will contain the nmsItemStack.
-            nbtTagCompound = saveNMSItemStack.invoke(nmsItemStack, nbtTagCompound); //nmsItemStack#save(nbtTagCompound); //saves nmsItemStack into our new NBTTagCompound
-            json = nbtTagCompound.toString();
+            ItemStack hoverItem = item.clone();
+            hoverItem.setAmount(1);
+            TextComponent text = new TextComponent(textToSend);
+            text.setHoverEvent(createItemHoverEvent(hoverItem));
+            text.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/buy " +
+                    container.getLocation().getWorld().getName() + " " + container.getLocation().getX() + " " +
+                    container.getLocation().getBlockY() + " " + container.getLocation().getBlockZ()));
+            player.spigot().sendMessage(text);
+            shopInfo.setHoverableText(text);
         }
         catch (Throwable rock)
         {
-            //print stacktrace in debug
-            //https://howtodoinjava.com/java/string/convert-stacktrace-to-string/
+            instance.getLogger().warning("Item hover serialization failed, will use legacy, non-hoverable, boring text.");
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
             rock.printStackTrace(pw);
             PrettySimpleShop.debug(sw.toString());
-
             player.sendMessage(textToSend);
-            instance.getServer().getPluginManager().callEvent(shopSelectEvent);
-            return true;
         }
 
-        BaseComponent[] hoverEventComponents = new BaseComponent[]
-                {
-                        new TextComponent(json)
-                };
-        HoverEvent hover = new HoverEvent(HoverEvent.Action.SHOW_ITEM, hoverEventComponents);
-        TextComponent text = new TextComponent(textToSend);
-        text.setHoverEvent(hover);
-        text.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/buy " +
-                container.getLocation().getWorld().getName() + " " + container.getLocation().getX() + " " +
-                container.getLocation().getBlockY() + " " + container.getLocation().getBlockZ()));
-        player.spigot().sendMessage(text);
-        shopInfo.setHoverableText(text);
         config.sendTip(player, "saleInfo");
         instance.getServer().getPluginManager().callEvent(shopSelectEvent);
         return true;
+    }
+
+
+    private HoverEvent createItemHoverEvent(ItemStack item)
+    {
+        return new HoverEvent(HoverEvent.Action.SHOW_ITEM,
+                new Item(item.getType().getKey().toString(), item.getAmount(), getItemTag(item)));
+    }
+
+
+    private ItemTag getItemTag(ItemStack item)
+    {
+        if (!item.hasItemMeta())
+            return null;
+
+        ItemMeta itemMeta = item.getItemMeta();
+        if (itemMeta == null)
+            return null;
+
+        String itemTag = itemMeta.getAsString();
+        if (itemTag == null || itemTag.isBlank() || "{}".equals(itemTag))
+            return null;
+
+        return ItemTag.ofNbt(itemTag);
     }
 
     public ShopInfo getSelectedShop(Player player)

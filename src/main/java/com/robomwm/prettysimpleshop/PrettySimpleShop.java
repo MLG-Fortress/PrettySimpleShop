@@ -101,16 +101,18 @@ public class PrettySimpleShop extends JavaPlugin
 
     public static String getItemName(ItemStack item)
     {
-        if (item.hasItemMeta() && item.getItemMeta().hasDisplayName())
-            return item.getItemMeta().getDisplayName();
-        try
+        if (item == null)
+            return "unknown item";
+
+        if (item.hasItemMeta())
         {
-            return item.getI18NDisplayName();
+            if (item.getItemMeta().hasDisplayName())
+                return item.getItemMeta().getDisplayName();
+            if (item.getItemMeta().hasItemName())
+                return item.getItemMeta().getItemName();
         }
-        catch (Throwable rock)
-        {
-            return item.getType().name().toLowerCase().replaceAll("_", " ");
-        }
+
+        return item.getType().name().toLowerCase().replace('_', ' ');
     }
 
     public ShopAPI getShopAPI()

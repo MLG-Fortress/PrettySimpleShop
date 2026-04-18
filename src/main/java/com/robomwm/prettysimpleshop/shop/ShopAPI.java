@@ -2,8 +2,6 @@ package com.robomwm.prettysimpleshop.shop;
 
 import com.robomwm.prettysimpleshop.ConfigManager;
 import com.robomwm.prettysimpleshop.PrettySimpleShop;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.Validate;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Nameable;
@@ -16,6 +14,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Created on 2/6/2018.
@@ -53,7 +52,7 @@ public class ShopAPI
      */
     public ItemStack getItemStack(Container container)
     {
-        Validate.notNull(container);
+        Objects.requireNonNull(container, "container");
         Inventory inventory = container.getInventory();
         ItemStack item = null;
         for (ItemStack itemStack : inventory)
@@ -131,7 +130,7 @@ public class ShopAPI
         //Otherwise, just change the price portion of the string
         name[1] = Double.toString(newPrice);
 
-        return setName(container, StringUtils.join(name, " "));
+        return setName(container, String.join(" ", name));
     }
 
     public double getPrice(Container container)
@@ -162,7 +161,7 @@ public class ShopAPI
         if (reset)
         {
             name[4] = "\u00A7\u00A7";
-            if (!setName(container, StringUtils.join(name, " ")))
+            if (!setName(container, String.join(" ", name)))
                 return 0;
         }
         return revenue;
@@ -280,7 +279,7 @@ public class ShopAPI
         PrettySimpleShop.debug("rev" + revenue);
         revenue += shopItem.getAmount() * price;
         name[4] = "\u00A7\u00A7" + Double.toString(revenue);
-        if (!setName(container, StringUtils.join(name, " ")))
+        if (!setName(container, String.join(" ", name)))
             return null;
 
         Inventory inventory = container.getInventory();

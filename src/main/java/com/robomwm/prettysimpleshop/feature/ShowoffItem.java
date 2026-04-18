@@ -31,6 +31,7 @@ import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
@@ -171,7 +172,7 @@ public class ShowoffItem implements Listener
         //Cleanup dropped items that may have been moved away from the chunk they spawned at
         for (Entity entity : event.getChunk().getEntities())
         {
-            if (entity.getType() == EntityType.DROPPED_ITEM && entity.hasMetadata("NO_PICKUP")) {
+            if (entity.getType() == EntityType.ITEM && entity.hasMetadata("NO_PICKUP")) {
                 entity.remove();
                 entity.removeMetadata("NO_PICKUP", plugin);
             }
@@ -251,7 +252,12 @@ public class ShowoffItem implements Listener
         if (itemStack == null)
             return false;
         itemStack.setAmount(1);
-        itemStack.getItemMeta().setDisplayName(String.valueOf(ThreadLocalRandom.current().nextInt())); //Prevents merging (idea from SCS) though metadata might be sufficient? Though we could also just use the ItemMergeEvent too but this is probably simpler and more performant.
+        ItemMeta itemMeta = itemStack.getItemMeta();
+        if (itemMeta != null)
+        {
+            itemMeta.setDisplayName(String.valueOf(ThreadLocalRandom.current().nextInt())); // Prevent merging without relying on entity-only hooks.
+            itemStack.setItemMeta(itemMeta);
+        }
         Item item = location.getWorld().dropItem(location, itemStack);
         item.setPickupDelay(Integer.MAX_VALUE);
         if (showItemName)
