@@ -10,6 +10,7 @@ import com.robomwm.prettysimpleshop.feature.ShowoffItem;
 import com.robomwm.prettysimpleshop.shop.ShopAPI;
 import com.robomwm.prettysimpleshop.shop.ShopListener;
 import net.milkbowl.vault.economy.Economy;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -111,6 +112,16 @@ public class PrettySimpleShop extends JavaPlugin
             if (item.getItemMeta().hasItemName())
                 return item.getItemMeta().getItemName();
         }
+
+        try
+        {
+            String effectiveName = PlainTextComponentSerializer.plainText().serialize(item.effectiveName());
+            if (effectiveName != null && !effectiveName.isEmpty()
+                    && !effectiveName.equals(item.getTranslationKey())
+                    && !effectiveName.equals(item.getType().getTranslationKey()))
+                return effectiveName;
+        }
+        catch (Throwable ignored) {}
 
         return item.getType().name().toLowerCase().replace('_', ' ');
     }
