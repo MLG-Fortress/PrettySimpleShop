@@ -105,14 +105,6 @@ public class PrettySimpleShop extends JavaPlugin
         if (item == null)
             return "unknown item";
 
-        if (item.hasItemMeta())
-        {
-            if (item.getItemMeta().hasDisplayName())
-                return item.getItemMeta().getDisplayName();
-            if (item.getItemMeta().hasItemName())
-                return item.getItemMeta().getItemName();
-        }
-
         try
         {
             String effectiveName = PlainTextComponentSerializer.plainText().serialize(item.effectiveName());
@@ -122,6 +114,9 @@ public class PrettySimpleShop extends JavaPlugin
                 return effectiveName;
         }
         catch (Throwable ignored) {}
+
+        if (item.hasItemMeta() && item.getItemMeta().hasDisplayName())
+            return item.getItemMeta().getDisplayName();
 
         return item.getType().name().toLowerCase().replace('_', ' ');
     }
