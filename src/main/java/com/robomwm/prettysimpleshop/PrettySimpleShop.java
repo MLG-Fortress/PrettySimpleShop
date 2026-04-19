@@ -9,14 +9,16 @@ import com.robomwm.prettysimpleshop.feature.DestroyShopOnBreak;
 import com.robomwm.prettysimpleshop.feature.ShowoffItem;
 import com.robomwm.prettysimpleshop.shop.ShopAPI;
 import com.robomwm.prettysimpleshop.shop.ShopListener;
-import net.milkbowl.vault.economy.Economy;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import net.kyori.adventure.translation.GlobalTranslator;
+import net.milkbowl.vault.economy.Economy;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.Locale;
 import java.util.concurrent.Callable;
 
 /**
@@ -107,11 +109,9 @@ public class PrettySimpleShop extends JavaPlugin
 
         try
         {
-            String effectiveName = PlainTextComponentSerializer.plainText().serialize(item.effectiveName());
-            if (effectiveName != null && !effectiveName.isEmpty()
-                    && !effectiveName.equals(item.getTranslationKey())
-                    && !effectiveName.equals(item.getType().getTranslationKey()))
-                return effectiveName;
+            String effectiveName = PlainTextComponentSerializer.plainText()
+                    .serialize(GlobalTranslator.render(item.effectiveName(), Locale.ENGLISH));
+            return effectiveName;
         }
         catch (Throwable ignored) {}
 
