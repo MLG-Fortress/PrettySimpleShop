@@ -160,7 +160,9 @@ public class ShowoffItem implements Listener
         while (locations.hasNext()) //can optimize later via mapping chunks if needed
         {
             Location location = locations.next();
-            if (location.getChunk() == event.getChunk())
+            if (location.getWorld().equals(event.getWorld())
+                    && (location.getBlockX() >> 4) == event.getChunk().getX()
+                    && (location.getBlockZ() >> 4) == event.getChunk().getZ())
             {
                 Item item = spawnedItems.get(location);
                 item.remove();
@@ -192,12 +194,15 @@ public class ShowoffItem implements Listener
             @Override
             public void run()
             {
-                InventoryHolder holder = ((Container)event.getBlock().getState()).getInventory().getHolder();
+                Container container = (Container)event.getBlock().getState();
+                if (!shopAPI.isShop(container))
+                    return;
+                InventoryHolder holder = container.getInventory().getHolder();
                 if (!(holder instanceof DoubleChest))
                     return;
                 DoubleChest doubleChest = (DoubleChest)holder;
                 despawnItem(((Chest)(doubleChest.getLeftSide())).getLocation().add(0.5, 1.2, 0.5));
-                despawnItem(((Chest)(doubleChest.getLeftSide())).getLocation().add(0.5, 1.2, 0.5));
+                despawnItem(((Chest)(doubleChest.getRightSide())).getLocation().add(0.5, 1.2, 0.5));
             }
         }.runTask(plugin);
     }
