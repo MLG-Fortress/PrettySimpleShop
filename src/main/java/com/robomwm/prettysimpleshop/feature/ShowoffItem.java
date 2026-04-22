@@ -267,7 +267,7 @@ public class ShowoffItem implements Listener
         item.setPickupDelay(Integer.MAX_VALUE);
         if (showItemName)
         {
-            String name = PrettySimpleShop.getItemName(itemStack); //TODO: make configurable
+            String name = shopInfo.getItemName();
             item.setCustomName(name);
             item.setCustomNameVisible(true);
         }
