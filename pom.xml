@@ -10,7 +10,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.release>17</maven.compiler.release>
-        <purpur.version>26.1.2.build.2585-stable</purpur.version>
+        <purpur.version>26.1.2.build.2586-stable</purpur.version>
     </properties>
     <repositories>
         <repository>
